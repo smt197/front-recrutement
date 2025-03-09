@@ -12,6 +12,9 @@ const baseConfig: VexConfig = {
   id: VexConfigName.apollo,
   name: 'Apollo',
   bodyClass: 'vex-layout-apollo',
+  showSettingTheme: {
+    visible: true
+  },
   style: {
     themeClassName: VexTheme.DEFAULT,
     colorScheme: VexColorScheme.LIGHT,
@@ -46,7 +49,13 @@ const baseConfig: VexConfig = {
     fixed: true,
     user: {
       visible: true
-    }
+    },
+    search: {
+      visible: true
+    },
+    panel: {
+      visible: true
+    },
   },
   navbar: {
     position: 'below-toolbar'

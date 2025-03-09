@@ -25,6 +25,9 @@ export interface VexConfig {
   bodyClass: string;
   imgSrc: string;
   direction: 'ltr' | 'rtl';
+  showSettingTheme: {
+    visible:  boolean;
+  },
   style: {
     themeClassName: string;
     colorScheme: VexColorScheme;
@@ -50,6 +53,12 @@ export interface VexConfig {
   toolbar: {
     fixed: boolean;
     user: {
+      visible: boolean;
+    };
+    search: {
+      visible: boolean;
+    };
+    panel: {
       visible: boolean;
     };
   };

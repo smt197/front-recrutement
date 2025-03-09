@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
       layout: "horizontal",
       boxed: false,
       sidenav: {
-        title: "resurex",
+        title: "RESUREX",
         imageUrl: "assets/img/logo/logo.svg",
         showCollapsePin: true,
         user: {

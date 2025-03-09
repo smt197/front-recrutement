@@ -1,18 +1,15 @@
 <div
-class="toolbar text-default w-full px-6 flex items-start justify-between p-1">
+class="toolbar text-default w-full px-6 flex items-start justify-between p-2">
 <div class="sidenav-toolbar flex-none flex items-end cursor-pointer" (click)="login()">
-          <img 
-            (click)="login()" 
-            class="w-8 select-none flex-none" 
-            src="assets/img/logo/logo.svg"            
-            alt="Logo"
-          >  
-      <h2 class="vex-sidenav-toolbar__headline flex-auto pl-1 pt-3 display-1">
-        <!-- {{ title$ | async }} --> vex
-      </h2>
+  <a  class="ltr:mr-4 rtl:ml-4 flex items-center">
+    <img alt="Logo" class="w-8 select-none" src="assets/img/logo/logo.svg" />
+    <h1 class="text-2xl font-bold tracking-wide ltr:pl-4 rtl:pr-4 m-0 select-none">
+      {{ title$ | async }}
+    </h1>
+  </a>
     </div>
   
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-2 py-2">
       <button 
         class="text-primary-500 border border-transparent hover:border-primary-500 py-2 px-4 rounded" 
         mat-stroked-button 

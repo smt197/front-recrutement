@@ -1,0 +1,44 @@
+<div
+class="toolbar text-default w-full px-6 flex items-start justify-between p-1">
+<div class="sidenav-toolbar flex-none flex items-end cursor-pointer" (click)="login()">
+          <img 
+            (click)="login()" 
+            class="w-8 select-none flex-none" 
+            src="assets/img/logo/logo.svg"            
+            alt="Logo"
+          >  
+      <h2 class="vex-sidenav-toolbar__headline flex-auto pl-1 pt-3 display-1">
+        <!-- {{ title$ | async }} --> vex
+      </h2>
+    </div>
+  
+    <div class="flex flex-wrap gap-2">
+      <button 
+        class="text-primary-500 border border-transparent hover:border-primary-500 py-2 px-4 rounded" 
+        mat-stroked-button 
+        type="button" 
+        (click)="login()">
+        Log In
+      </button>
+      <button 
+        class="bg-primary-600 border border-transparent hover:border-primary-500 py-2 px-4 rounded" 
+        mat-stroked-button 
+        type="button" 
+        (click)="register()">
+        <span class="text-white">Sign Up</span>
+      </button>
+      <!-- <button 
+        mat-raised-button 
+        color="primary" 
+        class="py-2 px-4 rounded"
+        (click)="register()">
+        Sign Up
+      </button> -->
+      <!-- <vex-change-languague></vex-change-languague> -->
+    </div>
+  </div>
+  
+  <router-outlet></router-outlet>
+  
+  
+  

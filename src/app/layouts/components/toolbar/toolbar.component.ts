@@ -72,6 +72,15 @@ export class ToolbarComponent implements OnInit {
     (config) => config.sidenav.title
   );
 
+  searchVisible$ = this.configService.config$.pipe(
+    map((config) => config.toolbar.search.visible)
+  );
+
+  panelVisible$ = this.configService.config$.pipe(
+    map((config) => config.toolbar.panel.visible)
+  );
+
+
   isDesktop$: Observable<boolean> = this.layoutService.isDesktop$;
   megaMenuOpen$: Observable<boolean> = of(false);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);

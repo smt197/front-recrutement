@@ -15,12 +15,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { stagger80ms } from '@vex/animations/stagger.animation';
+import { scaleIn400ms } from '@vex/animations/scale-in.animation';
+import { fadeInRight400ms } from '@vex/animations/fade-in-right.animation';
 
 @Component({
   selector: 'vex-register',
   templateUrl: './register.component.html',
   styleUrls: ['../auth.component.scss'],
-  animations: [fadeInUp400ms],
+  animations: [stagger80ms, fadeInUp400ms, scaleIn400ms, fadeInRight400ms],
   standalone: true,
   imports: [
     ReactiveFormsModule,

@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
       id: VexConfigName.ares,
       name: 'Ares',
       bodyClass: 'vex-layout-ares',
-      imgSrc: '//vex-landing.visurel.com/assets/img/layouts/ares.png',
+      imgSrc: '/vex-landing.visurel.com/assets/img/layouts/ares.png',
       direction: "ltr",
       showSettingTheme: {
         visible: false

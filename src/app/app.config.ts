@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { appRoutes } from './app.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {
+  HttpClientModule,
   provideHttpClient,
   withInterceptorsFromDi
 } from '@angular/common/http';
@@ -16,6 +17,7 @@ import { provideVex } from '@vex/vex.provider';
 import { provideNavigation } from './core/navigation/navigation.provider';
 import { vexConfigs } from '@vex/config/vex-configs';
 import { provideQuillConfig } from 'ngx-quill';
+import { httpInterceptorProviders } from './interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,7 +25,8 @@ export const appConfig: ApplicationConfig = {
       BrowserModule,
       MatDialogModule,
       MatBottomSheetModule,
-      MatNativeDateModule
+      MatNativeDateModule,
+      HttpClientModule,
     ),
     provideRouter(
       appRoutes,
@@ -35,6 +38,8 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
+    httpInterceptorProviders,
+
 
     provideVex({
       /**

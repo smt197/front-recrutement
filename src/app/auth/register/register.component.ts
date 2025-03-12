@@ -8,7 +8,7 @@ import {
 import { fadeInUp400ms } from '@vex/animations/fade-in-up.animation';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -18,6 +18,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { stagger80ms } from '@vex/animations/stagger.animation';
 import { scaleIn400ms } from '@vex/animations/scale-in.animation';
 import { fadeInRight400ms } from '@vex/animations/fade-in-right.animation';
+import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/interfaces/User';
+import { HttpErrorResponse } from '@angular/common/http';
+import { passwordMatchValidator } from 'src/app/interfaces/passwordValidators';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'vex-register',
@@ -32,18 +37,20 @@ import { fadeInRight400ms } from '@vex/animations/fade-in-right.animation';
     MatButtonModule,
     MatTooltipModule,
     NgIf,
+    NgFor,
     MatIconModule,
     MatCheckboxModule,
     MatStepperModule,
+    MatProgressSpinnerModule,
   ]
 })
 export class RegisterComponent {
   accountFormGroup: UntypedFormGroup = this.fb.group({
-    first_name: [null, [Validators.required, Validators.minLength(4),Validators.maxLength(50),Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
-    last_name: [null, [Validators.required, Validators.minLength(4),Validators.maxLength(50),Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
-    email: ['', [
-      Validators.required, 
-      Validators.minLength(8), 
+    first_name: ['john', [Validators.required, Validators.minLength(4), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
+    last_name: ['john', [Validators.required, Validators.minLength(4), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
+    email: ['tekie@tekie.com', [
+      Validators.required,
+      Validators.minLength(8),
       Validators.maxLength(254),
       Validators.email,
       Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
@@ -51,24 +58,28 @@ export class RegisterComponent {
   });
 
   passwordFormGroup: UntypedFormGroup = this.fb.group({
-    password: [
-      null,
-      Validators.compose([Validators.required, Validators.minLength(6)])
-    ],
-    passwordConfirm: [null, Validators.required]
-  });
+    password: [''],
+    password_confirmation: ['']
+  }, { validators: [passwordMatchValidator()] });
 
   confirmFormGroup: UntypedFormGroup = this.fb.group({
     terms: [null, Validators.requiredTrue]
   });
 
+  successFormGroup: UntypedFormGroup = this.fb.group({ });
+
   passwordInputType = 'password';
 
+  user: User | null = null;
+  isLoading: boolean = false;
+  errorMessage: User[] =[];
+  sucess: boolean = false;
   constructor(
     private fb: UntypedFormBuilder,
     private cd: ChangeDetectorRef,
-    private snackbar: MatSnackBar
-  ) {}
+    private snackbar: MatSnackBar,
+    private authService: AuthService,
+  ) { }
 
   showPassword() {
     this.passwordInputType = 'text';
@@ -81,12 +92,39 @@ export class RegisterComponent {
   }
 
   submit() {
-    this.snackbar.open(
-      'Hooray! You successfully created your account.',
-      undefined,
-      {
-        duration: 5000
-      }
-    );
+
+    this.user = {
+      first_name: this.accountFormGroup.value.first_name,
+      last_name: this.accountFormGroup.value.last_name,
+      email: this.accountFormGroup.value.email,
+      password: this.passwordFormGroup.value.password,
+      password_confirmation: this.passwordFormGroup.value.password_confirmation
+    };
+    this.isLoading = true;
+    this.authService.register(this.user).subscribe({
+      next: (responnse) => {
+        this.isLoading = false;
+        this.sucess = true;
+        this.showMessage(responnse.message);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isLoading = false;
+        this.errorMessage = [];
+        this.processError(error);
+      },
+    });
+  }
+
+  private processError(response: HttpErrorResponse): void {
+    this.errorMessage = [];
+    if (response.status === 400 || response.status === 422) {
+      this.errorMessage.push(response.error.errors)
+    }
+  }
+
+  showMessage(params: string | undefined) {
+    if (params) {
+      this.snackbar.open(params, "Fermer", { duration: 10000 });
+    }
   }
 }

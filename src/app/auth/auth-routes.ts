@@ -20,6 +20,17 @@ const authRoute: VexRoutes = [
                 path: 'register',
                 loadComponent: () => import('./register/register.component').then((m) => m.RegisterComponent),
             },
+            {
+                path: 'email/verify/:id/:hash/:uuid',
+                loadComponent: () => import('./email-verify/email-verify.component').then((m) => m.EmailVerifyComponent),
+            },
+            {
+                path: '**',
+                loadComponent: () =>
+                  import('./errors/error-404/error-404.component').then(
+                    (m) => m.Error404Component
+                  )
+              }
         ]
     },
 ];

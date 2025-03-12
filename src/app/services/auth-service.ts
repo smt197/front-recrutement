@@ -18,7 +18,9 @@ export class AuthService {
    * Récupère le cookie CSRF pour Sanctum
    */
   getCsrfToken(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/csrf-cookie`, { withCredentials: true });
+    return this.http.get(`${this.apiUrl}/csrf-cookie`, {
+      withCredentials: true
+    });
   }
 
   /**
@@ -26,7 +28,10 @@ export class AuthService {
    * @param userData Données de l'utilisateur {name, email, password, password_confirmation}
    */
   register(userData: User): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/register`, userData);
+    return this.http.post<ResponseGlobalServer>(
+      `${this.apiUrl}/register`,
+      userData
+    );
   }
 
   /**

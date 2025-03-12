@@ -74,6 +74,8 @@ export class RegisterComponent {
   isLoading: boolean = false;
   errorMessage: User[] =[];
   sucess: boolean = false;
+  mailmessage: string | undefined = "";
+
   constructor(
     private fb: UntypedFormBuilder,
     private cd: ChangeDetectorRef,
@@ -106,6 +108,7 @@ export class RegisterComponent {
         this.isLoading = false;
         this.sucess = true;
         this.showMessage(responnse.message);
+        this.mailmessage = responnse.mailmessage;
       },
       error: (error: HttpErrorResponse) => {
         this.isLoading = false;

@@ -44,20 +44,6 @@ export class AuthService {
   }
 
   /**
-   * Inscription d'un utilisateur
-   * @param paramsData Données de l'url de l' utilisateur {id, hash, uuid, expires,signature}
-   */
-  emailverify(paramsData: ParamsEmailVerify): Observable<ResponseGlobalServer> {
-    const params = new HttpParams()
-      .set('expires', paramsData.expires)
-      .set('signature', paramsData.signature);
-
-    return this.http.get<ResponseGlobalServer>(
-      `${this.apiUrl}/email/verify/${paramsData.id}/${paramsData.hash}/${paramsData.uuid}`,{params}
-    );
-  }
-
-  /**
    * Connexion de l'utilisateur
    * @param credentials {email, password}
    */

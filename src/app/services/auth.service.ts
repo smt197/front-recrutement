@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ResponseGlobalServer } from '../interfaces/response-globalServer';
 import { User } from '../interfaces/User';
+import { ParamsEmailVerify } from '../interfaces/Params-email-verify';
+import { ResponseGlobalServer } from '../interfaces/Response-globalServer';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,20 @@ export class AuthService {
    */
   register(userData: User): Observable<ResponseGlobalServer> {
     return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/register`, userData);
+  }
+
+  /**
+   * Inscription d'un utilisateur
+   * @param paramsData Données de l'url de l' utilisateur {id, hash, uuid, expires,signature}
+   */
+  emailverify(paramsData: ParamsEmailVerify): Observable<ResponseGlobalServer> {
+    const params = new HttpParams()
+      .set('expires', paramsData.expires)
+      .set('signature', paramsData.signature);
+
+    return this.http.get<ResponseGlobalServer>(
+      `${this.apiUrl}/email/verify/${paramsData.id}/${paramsData.hash}/${paramsData.uuid}`,{params}
+    );
   }
 
   /**

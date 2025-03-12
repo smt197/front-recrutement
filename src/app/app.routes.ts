@@ -4,7 +4,7 @@ import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 export const appRoutes: VexRoutes = [
     {
     path: '',
-    loadChildren: () => import('./auth-smt/auth-smt-routes'),
+    loadChildren: () => import('./auth/auth-routes'),
   },
   {
     path: 'index',

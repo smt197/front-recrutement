@@ -2,7 +2,7 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from "@angular/c
 import { Injectable } from "@angular/core";
 import { Observable, switchMap, from } from "rxjs";
 import { environment } from "src/environments/environment";
-import { AuthService } from "../services/auth.service";
+import { AuthService } from "../services/auth-service";
 
 @Injectable({
   providedIn: "root"

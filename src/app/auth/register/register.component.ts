@@ -18,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { stagger80ms } from '@vex/animations/stagger.animation';
 import { scaleIn400ms } from '@vex/animations/scale-in.animation';
 import { fadeInRight400ms } from '@vex/animations/fade-in-right.animation';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from '../../services/auth-service';
 import { User } from 'src/app/interfaces/User';
 import { HttpErrorResponse } from '@angular/common/http';
 import { passwordMatchValidator } from 'src/app/interfaces/passwordValidators';

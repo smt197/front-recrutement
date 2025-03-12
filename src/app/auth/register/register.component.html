@@ -80,25 +80,26 @@
 
 
                     <div class="flex flex-col sm:flex-col gap-2 sm:gap-6">
-
                       <!-- Email Field -->
                       <mat-form-field class="flex-auto">
                         <mat-label>Email</mat-label>
                         <input formControlName="email" matInput required type="email" />
-                        <mat-error *ngIf="accountFormGroup.get('email')?.hasError('required')">
+                      </mat-form-field>
+                      <div class="space-y-2" *ngIf="accountFormGroup.get('email')?.touched || accountFormGroup.get('email')?.dirty">
+                        <div *ngIf="accountFormGroup.get('email')?.hasError('required')">
                           Email is required
-                        </mat-error>
-                        <mat-error *ngIf="accountFormGroup.get('email')?.hasError('minlength')">
+                        </div>
+                        <div *ngIf="accountFormGroup.get('email')?.hasError('minlength')">
                           Email must be at least 8 characters
-                        </mat-error>
-                        <mat-error *ngIf="accountFormGroup.get('email')?.hasError('maxlength')">
+                        </div>
+                        <div *ngIf="accountFormGroup.get('email')?.hasError('maxlength')">
                           Email cannot exceed 254 characters
-                        </mat-error>
-                        <mat-error
+                        </div>
+                        <div
                           *ngIf="accountFormGroup.get('email')?.hasError('email') || accountFormGroup.get('email')?.hasError('pattern')">
                           Please enter a valid email address
-                        </mat-error>
-                      </mat-form-field>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -244,10 +245,9 @@
         </ng-container>
         <ng-template class="subheading-1" #failed>
           <div class="flex flex-col items-center">
-            <div
-            class="p-6 rounded-full bg-primary-600/10 text-primary-600 mx-auto flex items-center justify-center">
-            <mat-icon class="icon-5xl" svgIcon="mat:check"></mat-icon>
-          </div>
+            <div class="p-6 rounded-full bg-primary-600/10 text-primary-600 mx-auto flex items-center justify-center">
+              <mat-icon class="icon-5xl" svgIcon="mat:check"></mat-icon>
+            </div>
             <p class="text-xl font-bold mt-10">
               {{ mailmessage }}
             </p>

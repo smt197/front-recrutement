@@ -1,0 +1,29 @@
+<div class="bg-pattern w-full h-full flex flex-col items-center justify-center">
+    <div [@fadeInUp] class="card overflow-hidden w-full max-w-md">
+      <div class="p-6 pb-0 flex flex-col items-center justify-center" *ngIf="!isLoading">
+        <div class="fill-current text-center">
+          <img class="w-16" src="assets/img/logo/logo.svg" />
+        </div>
+        <h2 class="title m-0">Notification For your E-mail verification</h2>
+      </div>
+  
+      <div class="text-center mt-4 space-y-4">
+        <ng-container *ngIf="isLoading; else emailVerifyFailed">
+            <div class="p-4 flex items-center justify-center">
+                <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+            </div>
+        </ng-container>
+        <ng-template #emailVerifyFailed>
+            <h4 class="body-2 text-lg font-light m-0">
+                {{ mailmessage }}
+                </h4>
+        </ng-template>
+      </div>
+  
+      <div class="p-6 flex flex-col" *ngIf="!isLoading">
+        <button (click)="back()" color="primary" mat-raised-button>
+            Next
+          </button>
+      </div>
+    </div>
+  </div>

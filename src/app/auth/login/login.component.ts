@@ -1,7 +1,8 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component
+  Component,
+  OnInit
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -14,6 +15,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { passwordMatchValidatorLogin } from 'src/app/interfaces/passwordValidators';
+import { AuthService } from 'src/app/services/auth-service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { credentialsFormLogin } from 'src/app/interfaces/Credentials-form-login';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'vex-login',
@@ -32,34 +39,80 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatIconModule,
     MatCheckboxModule,
     RouterLink,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+
   ]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   form = this.fb.group({
-    email: ['', Validators.required],
-    password: ['', Validators.required]
+    email: ["", [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(254),
+      Validators.email,
+      Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
+    ]],
+    remember_me: [false],
+    password: [''],
+    password_confirmation: ['']
+  }, {
+    validators: [passwordMatchValidatorLogin()]
   });
 
   inputType = 'password';
   visible = false;
+  isLoading: boolean = false;
+  errorMessage: string[] = [];
+  sucess: boolean = false;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private cd: ChangeDetectorRef,
-    private snackbar: MatSnackBar
-  ) {}
+    private snackbar: MatSnackBar,
+    private authService: AuthService,
+
+  ) { }
+
+  ngOnInit(): void {
+
+  }
 
   send() {
-    this.router.navigate(['/']);
-    this.snackbar.open(
-      "Lucky you! Looks like you didn't need a password or email address! For a real application we provide validators to prevent this. ;)",
-      'THANKS',
-      {
-        duration: 10000
+    this.isLoading = true;
+    const form: credentialsFormLogin = {
+      email: this.form.value.email ?? "",
+      password: this.form.value.password ?? "",
+      remember_me: this.form.value.remember_me ?? false,
+    }
+    this.authService.login(form).subscribe({
+      next: (response) => {
+        this.showMessage(response.message);
+        this.isLoading = false;
+        this.cd.detectChanges();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.showMessage(error.error.message);
+        this.isLoading = false;
+        this.cd.detectChanges();
       }
-    );
+    });
+
+  }
+
+  private processError(response: HttpErrorResponse): void {
+    this.errorMessage = [];
+    if (response.status === 400 || response.status === 422) {
+      this.errorMessage.push(response.error.errors)
+    }
+  }
+
+  showMessage(params: string | undefined) {
+    if (params) {
+      this.snackbar.open(params, "Fermer", { duration: 10000 });
+    }
   }
 
   toggleVisibility() {

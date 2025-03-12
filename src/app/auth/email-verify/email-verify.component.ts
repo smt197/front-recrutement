@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, Router } from "@angular/router";
 import { fadeInUp400ms } from "@vex/animations/fade-in-up.animation";
 import { ParamsEmailVerify } from "src/app/interfaces/Params-email-verify";
-import { AuthService } from "src/app/services/auth.service";
+import { AuthService } from "src/app/services/auth-service";
 
 @Component({
   selector: 'vex-email-verify',

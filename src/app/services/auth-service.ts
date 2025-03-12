@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { User } from '../interfaces/User';
 import { ParamsEmailVerify } from '../interfaces/Params-email-verify';
 import { ResponseGlobalServer } from '../interfaces/Response-globalServer';
+import { credentialsFormLogin } from '../interfaces/Credentials-form-login';
 
 @Injectable({
   providedIn: 'root'
@@ -47,8 +48,8 @@ export class AuthService {
    * Connexion de l'utilisateur
    * @param credentials {email, password}
    */
-  login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+  login(credentials: credentialsFormLogin): Observable<ResponseGlobalServer> {
+    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/login`, credentials);
   }
 
   /**

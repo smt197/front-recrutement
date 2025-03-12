@@ -1,6 +1,6 @@
 <div class="w-full h-full bg-pattern flex flex-col items-center justify-center">
     <div @fadeInUp class="card overflow-hidden w-full max-w-md">
-  <ng-container *ngIf="!isLoading">
+      <ng-container *ngIf="!isLoading ;else spinner">
 
       <div class="p-6 pb-0 flex flex-col items-center justify-center">
         <div class="fill-current text-center">
@@ -87,7 +87,9 @@
 
     </div>
 
-  <ng-template>
-    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+  <ng-template #spinner>
+    <div class=" p-6 flex items-center justify-center">
+      <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    </div>
   </ng-template>
 </div>

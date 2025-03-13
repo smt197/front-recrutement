@@ -4,6 +4,6 @@ export interface ResponseGlobalServer {
     data?: User|any;
     message?: string;
     mailmessage?: string;
-    statut?: boolean;
+    status?: boolean;
     email_verified?: boolean;
 }

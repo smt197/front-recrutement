@@ -7,7 +7,7 @@ import {
 import { MenuItem } from '../interfaces/menu-item.interface';
 import { trackById } from '@vex/utils/track-by';
 import { VexPopoverRef } from '@vex/components/vex-popover/vex-popover-ref';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatRippleModule } from '@angular/material/core';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
@@ -117,6 +117,7 @@ export class ToolbarUserDropdownComponent implements OnInit {
     private popoverRef: VexPopoverRef<ToolbarUserDropdownComponent>,
     private authService: AuthService,
         private snackbar: MatSnackBar,
+        private router: Router,
     
   ) {}
 
@@ -132,6 +133,7 @@ export class ToolbarUserDropdownComponent implements OnInit {
     this.authService.logout().subscribe({
       next:(response)=>{
         this.showMessage(response.message);
+        this.router.navigate(['/login']);
       },
       error: (error: HttpErrorResponse) => {
         this.showMessage(error.error.message);

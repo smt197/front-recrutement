@@ -1,3 +1,4 @@
+import { noAuthGuard } from "../guards/no-auth.guard";
 import { AuthComponent } from "./auth.component";
 import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 
@@ -5,6 +6,7 @@ const authRoute: VexRoutes = [
     {
         path: '',
         component: AuthComponent,
+            canActivate:[noAuthGuard],
         children: [
             {
                 path: '',
@@ -24,13 +26,13 @@ const authRoute: VexRoutes = [
                 path: 'email/verify/:id/:hash/:uuid',
                 loadComponent: () => import('./email-verify/email-verify.component').then((m) => m.EmailVerifyComponent),
             },
-            {
-                path: '**',
-                loadComponent: () =>
-                  import('./errors/error-404/error-404.component').then(
-                    (m) => m.Error404Component
-                  )
-              }
+            // {
+            //     path: '**',
+            //     loadComponent: () =>
+            //       import('./errors/error-404/error-404.component').then(
+            //         (m) => m.Error404Component
+            //       )
+            // }
         ]
     },
 ];

@@ -58,4 +58,11 @@ export class AuthService {
   logout(): Observable<any> {
     return this.http.get(`${this.apiUrl}/logout`);
   }
+
+  /**
+   * retouver le status de l'utilisateur
+   */
+  authenticate(): Observable<ResponseGlobalServer> {
+    return this.http.get<ResponseGlobalServer>(`${this.apiUrl}/authenticate`);
+  }
 }

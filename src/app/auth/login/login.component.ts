@@ -91,6 +91,7 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.showMessage(response.message);
         this.isLoading = false;
+        this.router.navigate(['/index']);
         this.cd.detectChanges();
       },
       error: (error: HttpErrorResponse) => {

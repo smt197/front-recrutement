@@ -14,6 +14,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from 'src/app/services/auth-service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface OnlineStatus {
   id: 'online' | 'away' | 'dnd' | 'offline';
@@ -37,7 +40,9 @@ export interface OnlineStatus {
     MatRippleModule,
     RouterLink,
     NgClass,
-    NgIf
+    NgIf,
+        MatSnackBarModule,
+    
   ]
 })
 export class ToolbarUserDropdownComponent implements OnInit {
@@ -109,7 +114,10 @@ export class ToolbarUserDropdownComponent implements OnInit {
 
   constructor(
     private cd: ChangeDetectorRef,
-    private popoverRef: VexPopoverRef<ToolbarUserDropdownComponent>
+    private popoverRef: VexPopoverRef<ToolbarUserDropdownComponent>,
+    private authService: AuthService,
+        private snackbar: MatSnackBar,
+    
   ) {}
 
   ngOnInit() {}
@@ -121,5 +129,20 @@ export class ToolbarUserDropdownComponent implements OnInit {
 
   close() {
     this.popoverRef.close();
+    this.authService.logout().subscribe({
+      next:(response)=>{
+        this.showMessage(response.message);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.showMessage(error.error.message);
+      }
+    })
+  }
+
+
+  showMessage(params: string | undefined) {
+    if (params) {
+      this.snackbar.open(params, "Fermer", { duration: 10000 });
+    }
   }
 }

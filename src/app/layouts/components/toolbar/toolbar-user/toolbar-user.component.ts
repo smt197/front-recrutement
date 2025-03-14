@@ -8,6 +8,8 @@ import { VexPopoverService } from '@vex/components/vex-popover/vex-popover.servi
 import { ToolbarUserDropdownComponent } from './toolbar-user-dropdown/toolbar-user-dropdown.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
+import { User } from 'src/app/interfaces/User';
+import { AuthService } from 'src/app/services/auth-service';
 
 @Component({
   selector: 'vex-toolbar-user',
@@ -18,13 +20,22 @@ import { MatRippleModule } from '@angular/material/core';
 })
 export class ToolbarUserComponent implements OnInit {
   dropdownOpen: boolean = false;
+  user: User | null = null;
 
   constructor(
     private popover: VexPopoverService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private authService: AuthService,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getUserInfo();
+  }
+
+  getUserInfo(){
+    this.user = this.authService.user;                
+  }
+    
 
   showPopover(originRef: HTMLElement) {
     this.dropdownOpen = true;

@@ -1,4 +1,4 @@
-import { User } from "@ngneat/falso";
+import { User } from "./User";
 
 export interface ResponseGlobalServer {
     data?: User|any;
@@ -6,4 +6,5 @@ export interface ResponseGlobalServer {
     mailmessage?: string;
     status?: boolean;
     email_verified?: boolean;
+    user?: User;
 }

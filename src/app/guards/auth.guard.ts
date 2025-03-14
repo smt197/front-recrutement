@@ -11,8 +11,10 @@ export const authGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: Ro
     return authService.authenticate().pipe(
         map(response => {
             // Si l'utilisateur est authentifié
-            if (response.status) {
-                console.log("AG",response.message);
+            if (response.status) {//user is connected
+                if (response.user) {                    
+                    authService.user = response.user;
+                }
                 return true;
             }
             

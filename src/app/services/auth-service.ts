@@ -6,12 +6,14 @@ import { User } from '../interfaces/User';
 import { ParamsEmailVerify } from '../interfaces/Params-email-verify';
 import { ResponseGlobalServer } from '../interfaces/Response-globalServer';
 import { credentialsFormLogin } from '../interfaces/Credentials-form-login';
+import { Auth } from '../classes/Auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+  private _user: User | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -64,5 +66,21 @@ export class AuthService {
    */
   authenticate(): Observable<ResponseGlobalServer> {
     return this.http.get<ResponseGlobalServer>(`${this.apiUrl}/authenticate`);
+  }
+
+  get user(): User | null {
+    return this._user;
+  }
+
+  set user(value: User | null) {
+    try {
+      if (value !== null) {
+        Auth.userEmitter.emit(value);
+        Auth.user = value;
+      }
+      this._user = value;
+    } catch (error) {
+      console.error('Error setting user:', error);
+    }
   }
 }

@@ -23,6 +23,10 @@ const authRoute: VexRoutes = [
                 loadComponent: () => import('./register/register.component').then((m) => m.RegisterComponent),
             },
             {
+                path: 'forgot-password',
+                loadComponent: () => import('./forgot-password/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+            },
+            {
                 path: 'email/verify/:id/:hash/:uuid',
                 loadComponent: () => import('./email-verify/email-verify.component').then((m) => m.EmailVerifyComponent),
             },

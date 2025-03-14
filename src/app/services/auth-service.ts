@@ -7,6 +7,7 @@ import { ParamsEmailVerify } from '../interfaces/Params-email-verify';
 import { ResponseGlobalServer } from '../interfaces/Response-globalServer';
 import { credentialsFormLogin } from '../interfaces/Credentials-form-login';
 import { Auth } from '../classes/Auth';
+import { UserForgotPassword } from '../interfaces/User-forgot-password';
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +67,13 @@ export class AuthService {
    */
   authenticate(): Observable<ResponseGlobalServer> {
     return this.http.get<ResponseGlobalServer>(`${this.apiUrl}/authenticate`);
+  }
+
+  /**
+   * retouver le status de l'utilisateur
+   */
+  forgotPassword(email: UserForgotPassword | null): Observable<ResponseGlobalServer> {
+    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/forgot-password`,email);
   }
 
   get user(): User | null {

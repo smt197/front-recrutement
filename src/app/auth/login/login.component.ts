@@ -95,7 +95,7 @@ export class LoginComponent implements OnInit {
         this.cd.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
-        this.showMessage(error.error.message);
+        this.showMessage(error.message);
         this.isLoading = false;
         this.cd.detectChanges();
       }

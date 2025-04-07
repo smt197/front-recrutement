@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../interfaces/User';
 import { ParamsEmailVerify } from '../interfaces/Params-email-verify';
@@ -23,6 +23,15 @@ export class AuthService {
    */
   getCsrfToken(): Observable<any> {
     return this.http.get(`${this.apiUrl}/csrf-cookie`, { withCredentials: true });
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('jwt_token'); // Ou votre méthode de stockage
+  }
+
+  clearToken(): void {
+    localStorage.removeItem('jwt_token'); // Ou votre méthode de stockage
+    // Autres nettoyages si nécessaire
   }
 
   /**
@@ -52,16 +61,28 @@ export class AuthService {
    * @param credentials {email, password}
    */
   login(credentials: credentialsFormLogin): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials);
+    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials).pipe(
+      tap((response) => {
+        if (!response.access_token) {
+          throw new Error('Token manquant dans la réponse du serveur');
+        }
+        localStorage.setItem('jwt_token', response.access_token);
+      }),
+      catchError((error) => {
+        console.error('Erreur lors du login:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
    * Déconnexion de l'utilisateur
    */
   logout(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auth/logout`);
+    return this.http.get(`${this.apiUrl}/auth/logout`, {
+      withCredentials: true // Important pour les cookies/sessions
+    });
   }
-
   /**
    * retouver le status de l'utilisateur
    */

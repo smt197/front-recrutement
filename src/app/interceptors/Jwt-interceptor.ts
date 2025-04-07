@@ -1,59 +1,47 @@
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from "@angular/common/http";
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, switchMap, from } from "rxjs";
+import { Observable, catchError, throwError } from "rxjs";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../services/auth-service";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root"
 })
 export class JwtInterceptor implements HttpInterceptor {
   private readonly apiUrl = environment.apiUrl;
-  private csrfInitialized = false; // Indicateur pour éviter les requêtes répétées
 
-  constructor(private authService: AuthService,
+  constructor(
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    if (!this.csrfInitialized) {
-      return this.fetchCsrfToken().pipe(
-        switchMap(() => this.handleRequestWithCsrf(request, next))
-      );
-    }
-    return this.handleRequestWithCsrf(request, next);
-  }
-
-  private fetchCsrfToken(): Observable<any> {
-    this.csrfInitialized = true;
-    return this.authService.getCsrfToken();
-  }
-
-  private handleRequestWithCsrf(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const xsrfToken = this.getXSRFToken();
+    // Récupérer le token JWT depuis le stockage local
+    const token = this.authService.getToken();
     
-    request = request.clone({
-      withCredentials: true,
+    // Cloner la requête et ajouter le header Authorization si le token existe
+    let authReq = request.clone({
       setHeaders: {
         'Accept-Language': "fr",
         'Accept': 'application/json, multipart/form-data',
-        ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {})
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
       }
     });
 
-    return next.handle(request);
-  }
-
-  private getXSRFToken(): string | null {
-    const cookies = document.cookie.split(';');
-    for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'XSRF-TOKEN') {
-        return decodeURIComponent(value);
-      }
-    }
-    return null;
+    // Gérer la réponse pour vérifier les erreurs 401 (Non autorisé)
+    return next.handle(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // Si erreur 401, déconnecter l'utilisateur et rediriger
+          this.authService.clearToken();
+          this.router.navigate(['/login']);
+        }
+        return throwError(() => error);
+      })
+    );
   }
 }

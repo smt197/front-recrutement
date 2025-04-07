@@ -130,15 +130,24 @@ export class ToolbarUserDropdownComponent implements OnInit {
 
   close() {
     this.popoverRef.close();
+    
     this.authService.logout().subscribe({
-      next:(response)=>{
+      next: (response) => {
+        // Supprimez le token côté client aussi
+        localStorage.removeItem('jwt_token'); // Ou votre méthode de stockage
         this.showMessage(response.message);
         this.router.navigate(['/login']);
       },
       error: (error: HttpErrorResponse) => {
-        this.showMessage(error.error.message);
+        console.error('Logout error:', error);
+        this.showMessage(error.error.message || 'Erreur lors de la déconnexion');
+        
+        // Redirection quand même si le token est invalide
+        console.log('Logout success:', error);
+        localStorage.removeItem('jwt_token');
+        this.router.navigate(['/login']);
       }
-    })
+    });
   }
 
 

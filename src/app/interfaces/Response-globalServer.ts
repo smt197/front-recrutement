@@ -7,4 +7,5 @@ export interface ResponseGlobalServer {
     status?: boolean;
     email_verified?: boolean;
     user?: User;
+    access_token?: string;
 }

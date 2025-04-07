@@ -1,30 +1,33 @@
-import { CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from "@angular/router"
+import { CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from "@angular/router";
 import { AuthService } from "../services/auth-service";
 import { inject } from "@angular/core";
-import { map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 
 export const authGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
     const authService = inject(AuthService);
     const router = inject(Router);
     
+    // Vérifie si le token JWT est présent et valide
+    if (!authService.getToken()) {
+        router.navigate(['/login']);
+        return false;
+    }
+
     return authService.authenticate().pipe(
         map(response => {
-            // Si l'utilisateur est authentifié
-            if (response.status) {//user is connected
-                if (response.user) {                    
-                    authService.user = response.user;
-                }
+            // Si l'authentification est réussie
+            if (response.access_token) {
+                authService.setUser(response); // Stocke les infos utilisateur
                 return true;
             }
             
-            // Si l'utilisateur n'est pas authentifié
+            // Si problème d'authentification
             router.navigate(['/login']);
             return false;
         }),
         catchError(error => {
-            // En cas d'erreur (comme une erreur HTTP 401), rediriger vers login
             console.error('Erreur d\'authentification:', error);
+            authService.clearToken();
             router.navigate(['/login']);
             return of(false);
         })

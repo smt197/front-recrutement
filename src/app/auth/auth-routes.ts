@@ -6,7 +6,7 @@ const authRoute: VexRoutes = [
     {
         path: '',
         component: AuthComponent,
-            // canActivate:[noAuthGuard],
+            canActivate:[noAuthGuard],
         children: [
             {
                 path: '',

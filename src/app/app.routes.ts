@@ -10,7 +10,7 @@ export const appRoutes: VexRoutes = [
   {
     path: 'index',
     component: LayoutComponent,
-    // canActivate:[authGuard],
+    canActivate:[authGuard],
     children: [
       {
         path: '',

@@ -15,6 +15,8 @@ import { UserForgotPassword } from '../interfaces/User-forgot-password';
 export class AuthService {
   private apiUrl = environment.apiUrl;
   private _user: User | null = null;
+  private currentUser: any;
+
 
   constructor(private http: HttpClient) {}
 
@@ -22,7 +24,9 @@ export class AuthService {
    * Récupère le cookie CSRF pour Sanctum
    */
   getCsrfToken(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/csrf-cookie`, { withCredentials: true });
+    return this.http.get(`${this.apiUrl}/csrf-cookie`, {
+      withCredentials: true
+    });
   }
 
   getToken(): string | null {
@@ -32,14 +36,33 @@ export class AuthService {
   clearToken(): void {
     localStorage.removeItem('jwt_token'); // Ou votre méthode de stockage
     // Autres nettoyages si nécessaire
+    // this.user = null;
   }
+
+  setUser(userData: any): void {
+    this.user = userData;
+    if (userData.access_token) {
+      localStorage.setItem('jwt_token', userData.access_token);
+    }
+  }
+
+  authenticate(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/verify-token`, {
+        headers: {
+            'Authorization': `Bearer ${this.getToken()}`
+        }
+    });
+}
 
   /**
    * Inscription d'un utilisateur
    * @param userData Données de l'utilisateur {name, email, password, password_confirmation}
    */
   register(userData: User): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/auth/register`, userData);
+    return this.http.post<ResponseGlobalServer>(
+      `${this.apiUrl}/auth/register`,
+      userData
+    );
   }
 
   /**
@@ -52,7 +75,8 @@ export class AuthService {
       .set('signature', paramsData.signature);
 
     return this.http.get<ResponseGlobalServer>(
-      `${this.apiUrl}/email/verify/${paramsData.id}/${paramsData.hash}/${paramsData.uuid}`,{params}
+      `${this.apiUrl}/email/verify/${paramsData.id}/${paramsData.hash}/${paramsData.uuid}`,
+      { params }
     );
   }
 
@@ -61,18 +85,20 @@ export class AuthService {
    * @param credentials {email, password}
    */
   login(credentials: credentialsFormLogin): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials).pipe(
-      tap((response) => {
-        if (!response.access_token) {
-          throw new Error('Token manquant dans la réponse du serveur');
-        }
-        localStorage.setItem('jwt_token', response.access_token);
-      }),
-      catchError((error) => {
-        console.error('Erreur lors du login:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials)
+      .pipe(
+        tap((response) => {
+          if (!response.access_token) {
+            throw new Error('Token manquant dans la réponse du serveur');
+          }
+          localStorage.setItem('jwt_token', response.access_token);
+        }),
+        catchError((error) => {
+          console.error('Erreur lors du login:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -86,15 +112,20 @@ export class AuthService {
   /**
    * retouver le status de l'utilisateur
    */
-  authenticate(): Observable<ResponseGlobalServer> {
-    return this.http.get<ResponseGlobalServer>(`${this.apiUrl}/authenticate`);
-  }
+  // authenticate(): Observable<ResponseGlobalServer> {
+  //   return this.http.get<ResponseGlobalServer>(`${this.apiUrl}/authenticate`);
+  // }
 
   /**
    * retouver le status de l'utilisateur
    */
-  forgotPassword(email: UserForgotPassword | null): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/forgot-password`,email);
+  forgotPassword(
+    email: UserForgotPassword | null
+  ): Observable<ResponseGlobalServer> {
+    return this.http.post<ResponseGlobalServer>(
+      `${this.apiUrl}/forgot-password`,
+      email
+    );
   }
 
   get user(): User | null {

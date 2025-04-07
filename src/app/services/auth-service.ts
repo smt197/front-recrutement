@@ -30,7 +30,7 @@ export class AuthService {
    * @param userData Données de l'utilisateur {name, email, password, password_confirmation}
    */
   register(userData: User): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/register`, userData);
+    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/auth/register`, userData);
   }
 
   /**
@@ -52,14 +52,14 @@ export class AuthService {
    * @param credentials {email, password}
    */
   login(credentials: credentialsFormLogin): Observable<ResponseGlobalServer> {
-    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/login`, credentials);
+    return this.http.post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials);
   }
 
   /**
    * Déconnexion de l'utilisateur
    */
   logout(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/logout`);
+    return this.http.get(`${this.apiUrl}/auth/logout`);
   }
 
   /**

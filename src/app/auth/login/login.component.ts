@@ -86,23 +86,22 @@ export class LoginComponent implements OnInit {
       email: this.form.value.email ?? "",
       password: this.form.value.password ?? "",
       remember_me: this.form.value.remember_me ?? false,
-    }
+    };
+  
     this.authService.login(form).subscribe({
       next: (response) => {
-        this.showMessage(response.message);
         this.isLoading = false;
-        this.router.navigate(['/index']);
         this.cd.detectChanges();
+        this.showMessage(response.message);
+        // La redirection est gérée par le service
       },
       error: (error: HttpErrorResponse) => {
-        this.showMessage(error.message);
         this.isLoading = false;
         this.cd.detectChanges();
+        this.showMessage(error.error?.message || 'Erreur de connexion');
       }
     });
-
   }
-
   private processError(response: HttpErrorResponse): void {
     this.errorMessage = [];
     if (response.status === 400 || response.status === 422) {

@@ -21,7 +21,9 @@ export class JwtInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     // Récupérer le token JWT depuis le stockage local
-    const token = this.authService.getToken();
+    // const token = this.authService.getToken();
+    const token = localStorage.getItem('access_token');
+
     
     // Cloner la requête et ajouter le header Authorization si le token existe
     let authReq = request.clone({

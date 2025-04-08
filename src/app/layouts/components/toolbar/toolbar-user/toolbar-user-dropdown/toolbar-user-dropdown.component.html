@@ -4,7 +4,10 @@
       <div class="dropdown-heading-icon flex items-center justify-center">
         <mat-icon svgIcon="mat:person"></mat-icon>
       </div>
-      <div class="dropdown-heading">David Smith</div>
+      <div
+        class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm font-medium">
+        {{ userName }}
+      </div>
     </div>
 
     <button
@@ -58,9 +61,7 @@
         </span>
       </ng-container>
     </button>
-    <a (click)="close()" color="primary" mat-button
-    >Logout</a
-    >
+    <a (click)="close()" color="primary" mat-button>Logout</a>
   </div>
 </div>
 

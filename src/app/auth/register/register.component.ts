@@ -20,7 +20,6 @@ import { scaleIn400ms } from '@vex/animations/scale-in.animation';
 import { fadeInRight400ms } from '@vex/animations/fade-in-right.animation';
 import { User } from 'src/app/interfaces/User';
 import { HttpErrorResponse } from '@angular/common/http';
-import { passwordMatchValidator } from 'src/app/interfaces/passwordValidators';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { AuthService } from 'src/app/services/auth-service';
 
@@ -45,36 +44,26 @@ import { AuthService } from 'src/app/services/auth-service';
   ]
 })
 export class RegisterComponent {
-  accountFormGroup: UntypedFormGroup = this.fb.group({
-    first_name: ['john', [Validators.required, Validators.minLength(4), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
-    last_name: ['john', [Validators.required, Validators.minLength(4), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
-    email: ['tekie@tekie.com', [
+  registerForm: UntypedFormGroup = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ \'-]+$')]],
+    email: ['', [
       Validators.required,
       Validators.minLength(8),
       Validators.maxLength(254),
       Validators.email,
       Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
     ]],
+    password: ['', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$')
+    ]]
   });
-
-  passwordFormGroup: UntypedFormGroup = this.fb.group({
-    password: [''],
-    password_confirmation: ['']
-  }, { validators: [passwordMatchValidator()] });
-
-  confirmFormGroup: UntypedFormGroup = this.fb.group({
-    terms: [null, Validators.requiredTrue]
-  });
-
-  successFormGroup: UntypedFormGroup = this.fb.group({ });
 
   passwordInputType = 'password';
-
-  user: User | null = null;
   isLoading: boolean = false;
-  errorMessage: User[] =[];
-  sucess: boolean = false;
-  mailmessage: string | undefined = "";
+  errorMessage: string[] = [];
+  success: boolean = false;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -94,25 +83,25 @@ export class RegisterComponent {
   }
 
   submit() {
+    if (this.registerForm.invalid) {
+      return;
+    }
 
-    this.user = {
-      first_name: this.accountFormGroup.value.first_name,
-      last_name: this.accountFormGroup.value.last_name,
-      email: this.accountFormGroup.value.email,
-      password: this.passwordFormGroup.value.password,
-      password_confirmation: this.passwordFormGroup.value.password_confirmation
-    };
     this.isLoading = true;
-    this.authService.register(this.user).subscribe({
-      next: (responnse) => {
+    const userData = {
+      name: this.registerForm.value.name,
+      email: this.registerForm.value.email,
+      password: this.registerForm.value.password
+    };
+
+    this.authService.register(userData).subscribe({
+      next: (response) => {
         this.isLoading = false;
-        this.sucess = true;
-        this.showMessage(responnse.message);
-        this.mailmessage = responnse.mailmessage;
+        this.success = true;
+        this.showMessage(response.message || 'Inscription réussie');
       },
       error: (error: HttpErrorResponse) => {
         this.isLoading = false;
-        this.errorMessage = [];
         this.processError(error);
       },
     });
@@ -121,13 +110,23 @@ export class RegisterComponent {
   private processError(response: HttpErrorResponse): void {
     this.errorMessage = [];
     if (response.status === 400 || response.status === 422) {
-      this.errorMessage.push(response.error.errors)
+      if (response.error.errors) {
+        // Gestion des erreurs de validation
+        for (const key in response.error.errors) {
+          if (response.error.errors.hasOwnProperty(key)) {
+            this.errorMessage.push(...response.error.errors[key]);
+          }
+        }
+      } else if (response.error.message) {
+        // Gestion des messages d'erreur généraux
+        this.errorMessage.push(response.error.message);
+      }
+    } else {
+      this.errorMessage.push('Une erreur inattendue est survenue');
     }
   }
 
-  showMessage(params: string | undefined) {
-    if (params) {
-      this.snackbar.open(params, "Fermer", { duration: 10000 });
-    }
+  showMessage(message: string) {
+    this.snackbar.open(message, "Fermer", { duration: 10000 });
   }
 }

@@ -46,6 +46,10 @@ export interface OnlineStatus {
   ]
 })
 export class ToolbarUserDropdownComponent implements OnInit {
+
+
+  user: any = null;
+
   items: MenuItem[] = [
     {
       id: '1',
@@ -121,7 +125,15 @@ export class ToolbarUserDropdownComponent implements OnInit {
     
   ) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {
+    // Version simple (sans Observable)
+    // this.user = this.authService.userValue;
+    
+    // Version avec Observable (si vous voulez des mises à jour en temps réel)
+    this.authService.currentUser.subscribe(user => {
+      this.user = user;
+    });
+  }
 
   setStatus(status: OnlineStatus) {
     this.activeStatus = status;
@@ -135,6 +147,9 @@ export class ToolbarUserDropdownComponent implements OnInit {
       next: (response) => {
         // Supprimez le token côté client aussi
         localStorage.removeItem('jwt_token'); // Ou votre méthode de stockage
+        this.authService.clearToken();
+        this.authService.clearUser();
+        this.authService.user = null;
         this.showMessage(response.message);
         this.router.navigate(['/login']);
       },
@@ -145,9 +160,14 @@ export class ToolbarUserDropdownComponent implements OnInit {
         // Redirection quand même si le token est invalide
         console.log('Logout success:', error);
         localStorage.removeItem('jwt_token');
+
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  get userName(): string {
+    return this.user?.role;
   }
 
 

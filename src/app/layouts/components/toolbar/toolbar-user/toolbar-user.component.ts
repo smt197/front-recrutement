@@ -20,7 +20,7 @@ import { AuthService } from 'src/app/services/auth-service';
 })
 export class ToolbarUserComponent implements OnInit {
   dropdownOpen: boolean = false;
-  user: User | null = null;
+  user: any = null;
 
   constructor(
     private popover: VexPopoverService,
@@ -28,8 +28,14 @@ export class ToolbarUserComponent implements OnInit {
     private authService: AuthService,
   ) {}
 
-  ngOnInit() {
-    this.getUserInfo();
+  ngOnInit(): void {
+    // Version simple (sans Observable)
+    // this.user = this.authService.userValue;
+    
+    // Version avec Observable (si vous voulez des mises à jour en temps réel)
+    this.authService.currentUser.subscribe(user => {
+      this.user = user;
+    });
   }
 
   getUserInfo(){
@@ -66,4 +72,10 @@ export class ToolbarUserComponent implements OnInit {
       this.cd.markForCheck();
     });
   }
+  
+
+  get userName(): string {
+    return this.user?.email?.split('@')[0] || 'Guest';
+  }
 }
+

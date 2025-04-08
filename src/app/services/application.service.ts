@@ -1,0 +1,49 @@
+// application.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { catchError, Observable, throwError } from 'rxjs';
+import { Application, StatusUpdate } from '../interfaces/application';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApplicationService {
+  private apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
+
+  getApplications() {
+    return this.http.get(`${this.apiUrl}/applications`);
+  }
+
+  getApplicationsForJob(jobId: number) {
+    return this.http.get(`${this.apiUrl}/applications/job/${jobId}/candidates`);
+  }
+
+    getApplicationById(id: number) {
+        return this.http.get(`${this.apiUrl}/applications/${id}`);
+    }
+
+    updateStatus(applicationId: number, status: 'PENDING' | 'ACCEPTED' | 'REJECTED'): Observable<Application> {
+        return this.http.patch<Application>(
+          `${this.apiUrl}/applications/${applicationId}/status`,
+          { status } as StatusUpdate
+        ).pipe(
+          catchError(this.handleError)
+        );
+      }
+      
+      private handleError(error: HttpErrorResponse) {
+        let errorMessage = 'An unknown error occurred';
+        if (error.error instanceof ErrorEvent) {
+          // Client-side error
+          errorMessage = `Error: ${error.error.message}`;
+        } else {
+          // Server-side error
+          errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+        }
+        console.error(errorMessage);
+        return throwError(() => new Error(errorMessage));
+      }
+}

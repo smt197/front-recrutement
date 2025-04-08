@@ -2,8 +2,7 @@
   <div @fadeInUp class="card overflow-hidden w-full max-w-2xl">
     <ng-container>
       <div @stagger class="p-6 container">
-
-        <div class="flex flex-col items-start mt-4 mb-4 w-full px-4 sm:px-6" *ngIf="!sucess">
+        <div class="flex flex-col items-start mt-4 mb-4 w-full px-4 sm:px-6" *ngIf="!success">
           <h2 class="title mb-2 sm:mb-4 flex flex-col sm:flex-row sm:items-center">
             <span @scaleIn
               class="w-8 h-8 sm:w-10 sm:h-10 rounded-full text-primary-600 mb-2 sm:mb-0 sm:mr-3 flex items-center justify-center bg-primary-600/10">
@@ -16,244 +15,105 @@
           </h2>
         </div>
 
-        <ng-container *ngIf="!sucess ; else failed">
+        <ng-container *ngIf="!success; else successTemplate">
           <div @fadeInUp class="overflow-hidden">
+            <!-- Affichage des erreurs -->
             <div class="text-center p-4" *ngFor="let error of errorMessage">
-              <div *ngIf="error && error.email" class="text-red-500 text-lg font-medium">
-                {{ error.email[0] }}
+              <div class="text-red-500 text-lg font-medium">
+                {{ error }}
               </div>
             </div>
-            <mat-horizontal-stepper #stepper="matHorizontalStepper" [linear]="true">
-              <ng-template matStepperIcon="edit">
-                <mat-icon svgIcon="mat:done_all"></mat-icon>
-              </ng-template>
 
-              <ng-template matStepperIcon="done">
-                <mat-icon svgIcon="mat:done_all"></mat-icon>
-              </ng-template>
+            <!-- Formulaire simplifié -->
+            <form [formGroup]="registerForm" (ngSubmit)="submit()">
+              <h2 class="title m-0">Create Account</h2>
+              <div class="subheading-1">
+                Set up your account for testing purposes.
+              </div>
 
-              <mat-step [stepControl]="accountFormGroup">
-                <form [formGroup]="accountFormGroup">
-                  <ng-template matStepLabel>Create Account</ng-template>
+              <div class="mt-4 flex flex-col gap-2">
+                <!-- Name Field -->
+                <mat-form-field class="flex-auto">
+                  <mat-label>Full Name</mat-label>
+                  <input formControlName="name" matInput required />
+                  <mat-error *ngIf="registerForm.get('name')?.hasError('required')">
+                    Name is required
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('name')?.hasError('minlength')">
+                    Name must be at least 4 characters
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('name')?.hasError('maxlength')">
+                    Name cannot exceed 50 characters
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('name')?.hasError('pattern')">
+                    Name must contain only letters, spaces, hyphens or apostrophes
+                  </mat-error>
+                </mat-form-field>
 
-                  <h2 class="title m-0">Create Account</h2>
-                  <div class="subheading-1">
-                    Set up your account for testing purposes.
-                  </div>
+                <!-- Email Field -->
+                <mat-form-field class="flex-auto">
+                  <mat-label>Email</mat-label>
+                  <input formControlName="email" matInput required type="email" />
+                  <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+                    Email is required
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('email')?.hasError('minlength')">
+                    Email must be at least 8 characters
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('email')?.hasError('maxlength')">
+                    Email cannot exceed 254 characters
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('email')?.hasError('email') || registerForm.get('email')?.hasError('pattern')">
+                    Please enter a valid email address
+                  </mat-error>
+                </mat-form-field>
 
-                  <div class="mt-4 flex flex-col gap-2">
-                    <!-- First Name Field -->
-                    <mat-form-field class="flex-auto">
-                      <mat-label>First Name</mat-label>
-                      <input formControlName="first_name" matInput required />
-                      <mat-error *ngIf="accountFormGroup.get('first_name')?.hasError('required')">
-                        First name is required
-                      </mat-error>
-                      <mat-error *ngIf="accountFormGroup.get('first_name')?.hasError('minlength')">
-                        First name must be at least 4 characters
-                      </mat-error>
-                      <mat-error *ngIf="accountFormGroup.get('first_name')?.hasError('maxlength')">
-                        First name cannot exceed 50 characters
-                      </mat-error>
-                      <mat-error *ngIf="accountFormGroup.get('first_name')?.hasError('pattern')">
-                        First name must contain only letters, spaces, hyphens or apostrophes
-                      </mat-error>
-                    </mat-form-field>
+                <!-- Password Field -->
+                <mat-form-field class="flex-auto">
+                  <mat-label>Password</mat-label>
+                  <input [type]="passwordInputType" formControlName="password" matInput required />
+                  <button (click)="showPassword()" *ngIf="passwordInputType === 'password'" mat-icon-button
+                    matIconSuffix type="button">
+                    <mat-icon svgIcon="mat:visibility"></mat-icon>
+                  </button>
+                  <button (click)="hidePassword()" *ngIf="passwordInputType === 'text'" mat-icon-button
+                    matIconSuffix type="button">
+                    <mat-icon svgIcon="mat:visibility_off"></mat-icon>
+                  </button>
+                  <mat-error *ngIf="registerForm.get('password')?.hasError('required')">
+                    Password is required
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">
+                    Password must be at least 8 characters
+                  </mat-error>
+                  <mat-error *ngIf="registerForm.get('password')?.hasError('pattern')">
+                    Password must contain at least one uppercase, one lowercase, one number and one special character
+                  </mat-error>
+                </mat-form-field>
+              </div>
 
-                    <!-- Last Name Field -->
-                    <mat-form-field class="flex-auto">
-                      <mat-label>Last Name</mat-label>
-                      <input formControlName="last_name" matInput required />
-                      <mat-error *ngIf="accountFormGroup.get('last_name')?.hasError('required')">
-                        Last name is required
-                      </mat-error>
-                      <mat-error *ngIf="accountFormGroup.get('last_name')?.hasError('minlength')">
-                        Last name must be at least 4 characters
-                      </mat-error>
-                      <mat-error *ngIf="accountFormGroup.get('last_name')?.hasError('maxlength')">
-                        Last name cannot exceed 50 characters
-                      </mat-error>
-                      <mat-error *ngIf="accountFormGroup.get('last_name')?.hasError('pattern')">
-                        Last name must contain only letters, spaces, hyphens or apostrophes
-                      </mat-error>
-                    </mat-form-field>
-
-
-                    <div class="flex flex-col sm:flex-col gap-2 sm:gap-6">
-                      <!-- Email Field -->
-                      <mat-form-field class="flex-auto">
-                        <mat-label>Email</mat-label>
-                        <input formControlName="email" matInput required type="email" />
-                      </mat-form-field>
-                      <div class="space-y-2" *ngIf="accountFormGroup.get('email')?.touched || accountFormGroup.get('email')?.dirty">
-                        <div *ngIf="accountFormGroup.get('email')?.hasError('required')">
-                          Email is required
-                        </div>
-                        <div *ngIf="accountFormGroup.get('email')?.hasError('minlength')">
-                          Email must be at least 8 characters
-                        </div>
-                        <div *ngIf="accountFormGroup.get('email')?.hasError('maxlength')">
-                          Email cannot exceed 254 characters
-                        </div>
-                        <div
-                          *ngIf="accountFormGroup.get('email')?.hasError('email') || accountFormGroup.get('email')?.hasError('pattern')">
-                          Please enter a valid email address
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="actions flex items-center justify-end gap-2">
-                    <button (click)="stepper.reset()" [disabled]="accountFormGroup.pristine" color="primary" mat-button
-                      type="button">
-                      Reset
-                    </button>
-                    <button [disabled]="accountFormGroup.invalid" color="primary" mat-raised-button matStepperNext>
-                      Next
-                    </button>
-                  </div>
-                </form>
-              </mat-step>
-
-              <mat-step [stepControl]="passwordFormGroup">
-                <form [formGroup]="passwordFormGroup">
-                  <ng-template matStepLabel>Select a Password</ng-template>
-
-                  <h2 class="title m-0">Select a Password</h2>
-                  <div class="subheading-1">
-                    Enter your password you will use to log in.
-                  </div>
-
-                  // Partie 2: Correction du template HTML
-                  `<div class="mt-4 flex flex-col gap-2">
-                    <mat-form-field class="flex-auto">
-                      <mat-label>Password</mat-label>
-                      <input [type]="passwordInputType" formControlName="password" matInput required />
-                      <button (click)="showPassword()" *ngIf="passwordInputType === 'password'" mat-icon-button
-                        matIconSuffix type="button">
-                        <mat-icon svgIcon="mat:visibility"></mat-icon>
-                      </button>
-                      <button (click)="hidePassword()" *ngIf="passwordInputType === 'text'" mat-icon-button
-                        matIconSuffix type="button">
-                        <mat-icon svgIcon="mat:visibility_off"></mat-icon>
-                      </button>
-                    </mat-form-field>
-
-                    <mat-form-field class="flex-auto">
-                      <mat-label>Confirm Password</mat-label>
-                      <input [type]="passwordInputType" formControlName="password_confirmation" matInput required />
-                      <button (click)="showPassword()" *ngIf="passwordInputType === 'password'" mat-icon-button
-                        matIconSuffix type="button">
-                        <mat-icon svgIcon="mat:visibility"></mat-icon>
-                      </button>
-                      <button (click)="hidePassword()" *ngIf="passwordInputType === 'text'" mat-icon-button
-                        matIconSuffix type="button">
-                        <mat-icon svgIcon="mat:visibility_off"></mat-icon>
-                      </button>
-                    </mat-form-field>
-
-                    <div class="space-y-2"
-                      *ngIf="(passwordFormGroup.controls['password_confirmation'].invalid || passwordFormGroup.controls['password'].invalid) &&
-                          (passwordFormGroup.controls['password_confirmation'].dirty || passwordFormGroup.controls['password_confirmation'].touched ||
-                          passwordFormGroup.controls['password'].dirty || passwordFormGroup.controls['password'].touched)">
-
-                      <!-- Séparez les messages d'erreur pour qu'ils n'apparaissent pas combinés -->
-                      <div *ngIf="passwordFormGroup.controls['password_confirmation'].errors?.['password_not_match'] ||
-                            passwordFormGroup.controls['password'].errors?.['password_not_match']"
-                        class="text-red-500 relative -mt-4 text-sm">
-                        Passwords do not match.
-                      </div>
-
-                      <div *ngIf="passwordFormGroup.controls['password_confirmation'].errors?.['password_length'] ||
-                            passwordFormGroup.controls['password'].errors?.['password_length'] ||
-                            passwordFormGroup.controls['password_confirmation'].errors?.['confirmation_length']"
-                        class="text-red-500 relative -mt-4 text-sm">
-                        Password must be exactly 8 characters long.
-                      </div>
-
-                      <div *ngIf="passwordFormGroup.controls['password_confirmation'].errors?.['password_contains_link'] ||
-                            passwordFormGroup.controls['password'].errors?.['password_contains_link']"
-                        class="text-red-500 relative -mt-4 text-sm">
-                        The password cannot contain a link.
-                      </div>
-
-                      <div *ngIf="passwordFormGroup.controls['password_confirmation'].errors?.['password_is_email'] ||
-                            passwordFormGroup.controls['password'].errors?.['password_is_email']"
-                        class="text-red-500 relative -mt-4 text-sm">
-                        The password cannot contain an email address.
-                      </div>
-
-                      <div *ngIf="passwordFormGroup.controls['password_confirmation'].errors?.['password_strength'] ||
-                            passwordFormGroup.controls['password'].errors?.['password_strength']"
-                        class="text-red-500 relative -mt-4 text-sm">
-                        The password must contain at least one uppercase letter, one lowercase letter, one number, and
-                        one
-                        special character.
-                      </div>
-                    </div>
-                  </div>`
-
-                  <div class="actions flex items-center justify-end gap-2">
-                    <button color="primary" mat-button matStepperPrevious type="button">
-                      Previous
-                    </button>
-                    <button [disabled]="passwordFormGroup.invalid" color="primary" mat-raised-button matStepperNext>
-                      Next
-                    </button>
-                  </div>
-                </form>
-              </mat-step>
-
-              <mat-step [stepControl]="confirmFormGroup">
-                <form [formGroup]="confirmFormGroup">
-                  <ng-template matStepLabel>Confirm Creation</ng-template>
-
-                  <div class="title m-0">You're almost there!</div>
-                  <div class="subheading-1">
-                    To finish registration, accept our terms of service and click on
-                    "Create Account".
-                  </div>
-
-                  <div class="mt-4 flex flex-col gap-2">
-                    <mat-checkbox class="checkbox" formControlName="terms">
-                      I agree to the terms of service and the usual stuff. *
-                    </mat-checkbox>
-                  </div>
-
-                  <ng-container *ngIf="!isLoading; else loadingTemplate">
-                    <div class="actions flex items-center justify-end gap-2">
-
-                      <button color="primary" mat-button matStepperPrevious type="button">
-                        Previous
-                      </button>
-                      <button [disabled]="confirmFormGroup.invalid" (click)="submit()" color="primary"
-                        mat-raised-button>
-                        <span> Create Account</span>
-                      </button>
-                    </div>
-                  </ng-container>
-                  <ng-template #loadingTemplate>
-                    <div class="actions flex items-center justify-end gap-2">
-
-                      <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
-                    </div>
-                  </ng-template>
-                </form>
-              </mat-step>
-            </mat-horizontal-stepper>
+              <!-- Submit Button -->
+              <div class="actions flex items-center justify-end gap-2 mt-4">
+                <button [disabled]="registerForm.invalid || isLoading" color="primary" mat-raised-button type="submit">
+                  <span *ngIf="!isLoading">Create Account</span>
+                  <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+                </button>
+              </div>
+            </form>
           </div>
         </ng-container>
-        <ng-template class="subheading-1" #failed>
+
+        <!-- Success Template -->
+        <ng-template #successTemplate>
           <div class="flex flex-col items-center">
             <div class="p-6 rounded-full bg-primary-600/10 text-primary-600 mx-auto flex items-center justify-center">
               <mat-icon class="icon-5xl" svgIcon="mat:check"></mat-icon>
             </div>
             <p class="text-xl font-bold mt-10">
-              {{ mailmessage }}
+              Your account has been created successfully!
             </p>
           </div>
         </ng-template>
-
       </div>
     </ng-container>
   </div>

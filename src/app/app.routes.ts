@@ -3,25 +3,27 @@ import { LayoutComponent } from './layouts/layout/layout.component';
 import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 
 export const appRoutes: VexRoutes = [
-    {
+  {
     path: '',
-    loadChildren: () => import('./auth/auth-routes'),
+    loadChildren: () => import('./auth/auth-routes')
   },
   {
-    path: 'index',
+    path: '',
     component: LayoutComponent,
-    canActivate:[authGuard],
+    canActivate: [authGuard],
     children: [
       {
-        path: '',
+        path: 'index',
         redirectTo: 'home',
         pathMatch: 'full'
       },
       {
         path: 'home',
         loadComponent: () =>
-          import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
-      },
+          import('./pages/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          )
+      }
       // {
       //   path: '**',
       //   loadComponent: () =>

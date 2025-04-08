@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../interfaces/User';
 import { ParamsEmailVerify } from '../interfaces/Params-email-verify';
@@ -8,6 +8,7 @@ import { ResponseGlobalServer } from '../interfaces/Response-globalServer';
 import { credentialsFormLogin } from '../interfaces/Credentials-form-login';
 import { Auth } from '../classes/Auth';
 import { UserForgotPassword } from '../interfaces/User-forgot-password';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,31 @@ import { UserForgotPassword } from '../interfaces/User-forgot-password';
 export class AuthService {
   private apiUrl = environment.apiUrl;
   private _user: User | null = null;
-  private currentUser: any;
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  public currentUser = this.currentUserSubject.asObservable();
 
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    this.currentUserSubject = new BehaviorSubject<User | null>(
+      JSON.parse(localStorage.getItem('currentUser') || '{}')
+    );
+    this.currentUser = this.currentUserSubject.asObservable();
+  }
 
-  constructor(private http: HttpClient) {}
+  setUserWithoutRedirect(loginResponse: any): void {
+    if (!loginResponse?.user?.role) {
+      console.error('Role manquant dans la réponse:', loginResponse);
+      return;
+    }
+  
+    localStorage.setItem('access_token', loginResponse.access_token);
+    localStorage.setItem('currentUser', JSON.stringify(loginResponse.user));
+    this.currentUserSubject.next(loginResponse.user);
+    
+    // Pas de redirection ici !
+  }
 
   /**
    * Récupère le cookie CSRF pour Sanctum
@@ -39,20 +61,59 @@ export class AuthService {
     // this.user = null;
   }
 
-  setUser(userData: any): void {
-    this.user = userData;
-    if (userData.access_token) {
-      localStorage.setItem('jwt_token', userData.access_token);
-    }
+  get userValue(): any {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
   }
 
-  authenticate(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auth/verify-token`, {
-        headers: {
-            'Authorization': `Bearer ${this.getToken()}`
-        }
+  // Après un login réussi
+  setUser(loginResponse: any): void {
+    if (!loginResponse?.user?.role) {
+      console.error('Role manquant dans la réponse:', loginResponse);
+      return;
+    }
+
+    console.log('User set:', loginResponse.user.role); // Debug
+
+    localStorage.setItem('access_token', loginResponse.access_token);
+    localStorage.setItem('currentUser', JSON.stringify(loginResponse.user));
+    this.currentUserSubject.next(loginResponse.user);
+
+    // Délai minimal pour s'assurer que la navigation est prête
+    setTimeout(() => {
+      this.redirectBasedOnRole(loginResponse.user.role);
+    }, 200);
+  }
+
+  private redirectBasedOnRole(role: string): void {
+    setTimeout(() => {
+      window.location.href = this.getRoleHome(role); 
+    }, 300);
+  }
+  
+  private getRoleHome(role: string): string {
+    const baseUrl:any = window.location.origin;
+    const routes:any = {
+      'RECRUTEUR': '/home',
+      'CANDIDATE': '/candidate-dashboard',
+      'ADMIN': '/admin-dashboard'
+    };
+    
+    return baseUrl + (routes[role.toUpperCase()] || '/');
+  }
+  clearUser(): void {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('currentUser');
+    this.currentUserSubject.next(null);
+  }
+
+  authenticate(): Observable<{access_token: string, user: any}> {
+    return this.http.get<{access_token: string, user: any}>(`${this.apiUrl}/auth/verify-token`, {
+      headers: {
+        'Authorization': `Bearer ${this.getToken()}`
+      }
     });
-}
+  }
 
   /**
    * Inscription d'un utilisateur
@@ -88,11 +149,12 @@ export class AuthService {
     return this.http
       .post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
-        tap((response) => {
+        tap((response: any) => {
           if (!response.access_token) {
             throw new Error('Token manquant dans la réponse du serveur');
           }
           localStorage.setItem('jwt_token', response.access_token);
+          this.setUser(response);
         }),
         catchError((error) => {
           console.error('Erreur lors du login:', error);

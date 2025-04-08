@@ -8,4 +8,5 @@ export interface ResponseGlobalServer {
     email_verified?: boolean;
     user?: User;
     access_token?: string;
+    StatusCode?: string;
 }

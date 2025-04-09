@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
       boxed: false,
       sidenav: {
         title: "CABI-RH",
-        imageUrl: "assets/img/logo/logo.svg",
+        imageUrl: "assets/img/logo/log.png",
         showCollapsePin: true,
         user: {
           visible: false

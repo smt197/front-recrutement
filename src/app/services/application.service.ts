@@ -1,9 +1,10 @@
 // application.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Application, StatusUpdate } from '../interfaces/application';
+import { PaginatedResponse } from '../interfaces/PaginateResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,16 @@ export class ApplicationService {
   constructor(private http: HttpClient) {}
 
 
-  getApplications() {
-    return this.http.get(`${this.apiUrl}/applications`);
+  // getApplications() {
+  //   return this.http.get(`${this.apiUrl}/applications`);
+  // }
+
+  getApplications(page: number = 1, limit: number = 10): Observable<PaginatedResponse<Application>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+  
+    return this.http.get<PaginatedResponse<Application>>(`${this.apiUrl}/applications`, { params });
   }
 
   getAllJobTitles(): Observable<string[]> {

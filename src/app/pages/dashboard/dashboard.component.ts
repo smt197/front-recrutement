@@ -13,6 +13,8 @@ import { ApplicationService } from 'src/app/services/application.service';
 import { AuthService } from 'src/app/services/auth-service';
 import { FormsModule } from '@angular/forms'; // Ajoutez ceci
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+
 
 
 
@@ -34,6 +36,7 @@ import { MatSelectModule } from '@angular/material/select';
     FormsModule,
     MatInputModule,
     MatSelectModule,
+    MatPaginatorModule, 
   ],
 })
 export class DashboardComponent implements OnInit {
@@ -44,6 +47,11 @@ export class DashboardComponent implements OnInit {
   isLoading = false;
   selectedJobTitle: string = '';
   jobTitles: string[] = [];
+  
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalItems = 0;
+
 
 
   constructor(
@@ -78,20 +86,31 @@ export class DashboardComponent implements OnInit {
   }
 
   loadApplications() {
-    this.applicationService.getApplications().subscribe({
-      next: (response: any) => {
-        this.applications = response;
-        this.dataSource = this.applications.map(app => ({
-          candidate: app.candidate.name,
-          job: app.job.title,
-          status: app.status,
-          id: app.id
-        }));
-      },
-      error: (error) => {
-        console.error('Error loading applications:', error);
-      }
-    });
+    this.applicationService.getApplications(this.currentPage, this.itemsPerPage)
+      .subscribe({
+        next: (response) => {
+          this.applications = response.data;
+          this.dataSource = this.prepareDataSource(response.data);
+          this.totalItems = response.meta.total;
+        },
+        error: (error) => console.error(error)
+      });
+  }
+  prepareDataSource(applications: Application[]): any[] {
+    return applications.map(app => ({
+      candidate: app.candidate.name,
+      job: app.job.title,
+      status: app.status,
+      id: app.id,
+      email: app.candidate.email,
+      appliedDate: new Date(app.createdAt).toLocaleDateString()
+    }));
+  }
+
+  onPageChange(event: PageEvent) {
+    this.currentPage = event.pageIndex + 1;
+    this.itemsPerPage = event.pageSize;
+    this.loadApplications();
   }
 
   loadApplicationsByJob(jobTitle: string) {

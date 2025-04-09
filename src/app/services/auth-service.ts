@@ -85,11 +85,16 @@ export class AuthService {
     }, 200);
   }
 
-  private redirectBasedOnRole(role: string): void {
-    setTimeout(() => {
-      window.location.href = this.getRoleHome(role); 
-    }, 300);
-  }
+  // auth.service.ts
+private redirectBasedOnRole(role: string): void {
+  // Tous les rôles sont redirigés vers /home
+  this.router.navigate(['/home']).then(success => {
+    if (!success) {
+      console.error('Failed to navigate to /home');
+      this.router.navigate(['/']);
+    }
+  });
+}
   
   private getRoleHome(role: string): string {
     const baseUrl:any = window.location.origin;

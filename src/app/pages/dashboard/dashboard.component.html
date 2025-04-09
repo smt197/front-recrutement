@@ -12,18 +12,30 @@
   <h1 class="display-2">Welcome, {{user.name}}</h1>
 
   <div *ngIf="user?.role === 'RECRUTEUR'" class="mt-8">
-    <h2 class="title">Applications</h2>
+    <h2 class="title">Candidatures</h2>
+
+    <div class="job-selector">
+      <mat-form-field appearance="outline">
+        <mat-label>Sélectionnez un poste</mat-label>
+        <mat-select [(ngModel)]="selectedJobTitle" (selectionChange)="onJobSelected()">
+          <mat-option *ngFor="let title of jobTitles" [value]="title">
+            {{title}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
     
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <!-- Candidate Column -->
       <ng-container matColumnDef="candidate">
-        <th mat-header-cell *matHeaderCellDef>Candidate</th>
+        <th mat-header-cell *matHeaderCellDef>Candidat</th>
         <td mat-cell *matCellDef="let element">{{element.candidate}}</td>
       </ng-container>
 
       <!-- Job Column -->
       <ng-container matColumnDef="job">
-        <th mat-header-cell *matHeaderCellDef>Job</th>
+        <th mat-header-cell *matHeaderCellDef>Poste</th>
         <td mat-cell *matCellDef="let element">{{element.job}}</td>
       </ng-container>
 

@@ -13,12 +13,18 @@ export class ApplicationService {
 
   constructor(private http: HttpClient) {}
 
+
   getApplications() {
     return this.http.get(`${this.apiUrl}/applications`);
   }
 
-  getApplicationsForJob(jobId: number) {
-    return this.http.get(`${this.apiUrl}/applications/job/${jobId}/candidates`);
+  getAllJobTitles(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/jobs/titles`);
+  }
+
+
+  getApplicationsByJobTitle(title: string): Observable<Application[]> {
+    return this.http.get<Application[]>(`${this.apiUrl}/applications/job/by-title/${encodeURIComponent(title)}/candidates`);
   }
 
     getApplicationById(id: number) {

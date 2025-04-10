@@ -65,6 +65,14 @@
             [disabled]="element.status === 'REJECTED'">
             <mat-icon color="warn" svgIcon="mat:close"></mat-icon>
           </button>
+          <button
+            mat-icon-button
+            (click)="updateApplicationStatus(element.id, 'PRESELECTED')"
+            [disabled]="element.status === 'PRESELECTED'">
+            <mat-icon
+              color="accent"
+              svgIcon="mat:check_circle_outline"></mat-icon>
+          </button>
         </td>
       </ng-container>
       <ng-container matColumnDef="details">

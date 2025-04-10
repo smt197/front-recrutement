@@ -110,6 +110,9 @@ export class DashboardComponent implements OnInit {
       status: app.status,
       id: app.id,
       email: app.candidate.email,
+      cvUrl: app.cvUrl,
+      coverLetterUrl: app.coverLetterUrl,
+      portfolioUrl: app.portfolioUrl,
       appliedDate: new Date(app.createdAt).toLocaleDateString()
     }));
   }
@@ -148,7 +151,7 @@ export class DashboardComponent implements OnInit {
 
   updateApplicationStatus(
     id: number,
-    status: 'PENDING' | 'ACCEPTED' | 'REJECTED'
+    status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'PRESELECTED'
   ) {
     this.applicationService.updateStatus(id, status).subscribe({
       next: (updatedApplication) => {

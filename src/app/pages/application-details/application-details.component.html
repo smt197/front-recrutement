@@ -1,0 +1,129 @@
+<div class="details-container">
+  <h2 mat-dialog-title class="header">
+    <mat-icon class="icon">description</mat-icon>
+    Détails de la candidature
+  </h2>
+
+  <mat-divider></mat-divider>
+
+  <mat-dialog-content class="content">
+    <!-- Section Candidat -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <mat-icon class="section-icon">person</mat-icon>
+        Candidat
+      </h3>
+      <div class="detail-row">
+        <span class="detail-label">Nom:</span>
+        <span class="detail-value">{{
+          data?.candidate?.name || "Non renseigné"
+        }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Email:</span>
+        <span class="detail-value">
+          {{ data?.candidate?.email || "Non renseigné" }}
+        </span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Section Poste -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <mat-icon class="section-icon">work</mat-icon>
+        Poste
+      </h3>
+      <div class="detail-row">
+        <span class="detail-label">Titre:</span>
+        <span class="detail-value">{{
+          data?.job?.title || "Non renseigné"
+        }}</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Section Documents -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <mat-icon class="section-icon">attach_file</mat-icon>
+        Documents
+      </h3>
+      <div class="documents-grid">
+        @if (data.cvUrl) {
+          <a
+            [href]="data.cvUrl"
+            target="_blank"
+            class="document-link"
+            matTooltip="Ouvrir le CV">
+            <mat-icon>picture_as_pdf</mat-icon>
+            CV
+          </a>
+        }
+
+        @if (data.coverLetterUrl) {
+          <a
+            [href]="data.coverLetterUrl"
+            target="_blank"
+            class="document-link"
+            matTooltip="Ouvrir la lettre de motivation">
+            <mat-icon>article</mat-icon>
+            Lettre de motivation
+          </a>
+        }
+
+        @if (data.portfolioUrl) {
+          <a
+            [href]="data.portfolioUrl"
+            target="_blank"
+            class="document-link"
+            matTooltip="Ouvrir le portfolio">
+            <mat-icon>collections</mat-icon>
+            Portfolio
+          </a>
+        }
+
+        <span *ngIf="!hasDocuments()">Aucun document disponible</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Section Dates -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <mat-icon class="section-icon">event</mat-icon>
+        Dates
+      </h3>
+      <div class="detail-row">
+        <span class="detail-label">Date de candidature:</span>
+        <span class="detail-value">
+          {{ data.createdAt }}
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Dernière mise à jour:</span>
+        <span class="detail-value">
+          {{ data.updatedAt }}
+        </span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Section Statut -->
+    <div class="status-section" [class]="'status-' + data.status.toLowerCase()">
+      <mat-icon>{{ getStatusIcon(data.status) }}</mat-icon>
+      Statut: {{ data.status | translateStatus }}
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+      Fermer
+    </button>
+  </mat-dialog-actions>
+</div>

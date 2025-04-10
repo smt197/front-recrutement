@@ -32,3 +32,8 @@
   mat-form-field {
     width: 100%;
   }
+
+  .details-snackbar {
+    white-space: pre-line; /* Pour conserver les sauts de ligne */
+    max-width: 80vw !important;
+  }

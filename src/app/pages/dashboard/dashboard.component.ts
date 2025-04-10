@@ -14,9 +14,9 @@ import { AuthService } from 'src/app/services/auth-service';
 import { FormsModule } from '@angular/forms'; // Ajoutez ceci
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-
-
-
+import { MatDialog } from '@angular/material/dialog';
+import { ApplicationDetailsComponent } from '../application-details/application-details.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'vex-dashboard',
@@ -36,38 +36,44 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
     FormsModule,
     MatInputModule,
     MatSelectModule,
-    MatPaginatorModule, 
-  ],
+    MatPaginatorModule,
+    MatDialogModule
+  ]
 })
 export class DashboardComponent implements OnInit {
   user: any = null;
   applications: any[] = [];
-  displayedColumns: string[] = ['candidate', 'job', 'status', 'actions'];
+  displayedColumns: string[] = [
+    'candidate',
+    'job',
+    'status',
+    'actions',
+    'details'
+  ];
   dataSource: any[] = [];
   isLoading = false;
   selectedJobTitle: string = '';
   jobTitles: string[] = [];
-  
+
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
 
-
-
   constructor(
     private authService: AuthService,
     private applicationService: ApplicationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser.subscribe(user => {
+    this.authService.currentUser.subscribe((user) => {
       this.user = user;
       if (user?.role === 'RECRUTEUR') {
         this.loadApplications();
         this.loadJobTitles();
       }
-    }); 
+    });
   }
 
   loadJobTitles() {
@@ -86,7 +92,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadApplications() {
-    this.applicationService.getApplications(this.currentPage, this.itemsPerPage)
+    this.applicationService
+      .getApplications(this.currentPage, this.itemsPerPage)
       .subscribe({
         next: (response) => {
           this.applications = response.data;
@@ -97,7 +104,7 @@ export class DashboardComponent implements OnInit {
       });
   }
   prepareDataSource(applications: Application[]): any[] {
-    return applications.map(app => ({
+    return applications.map((app) => ({
       candidate: app.candidate.name,
       job: app.job.title,
       status: app.status,
@@ -115,11 +122,11 @@ export class DashboardComponent implements OnInit {
 
   loadApplicationsByJob(jobTitle: string) {
     this.isLoading = true;
-    
+
     this.applicationService.getApplicationsByJobTitle(jobTitle).subscribe({
       next: (applications: Application[]) => {
         this.applications = applications;
-        this.dataSource = applications.map(app => ({
+        this.dataSource = applications.map((app) => ({
           candidate: app.candidate.name,
           job: app.job.title,
           status: app.status,
@@ -131,31 +138,63 @@ export class DashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading applications:', error);
-        this.snackBar.open('Failed to load applications', 'Close', { duration: 3000 });
+        this.snackBar.open('Failed to load applications', 'Close', {
+          duration: 3000
+        });
         this.isLoading = false;
       }
     });
   }
-  
 
-  updateApplicationStatus(id: number, status: 'PENDING' | 'ACCEPTED' | 'REJECTED') {
+  updateApplicationStatus(
+    id: number,
+    status: 'PENDING' | 'ACCEPTED' | 'REJECTED'
+  ) {
     this.applicationService.updateStatus(id, status).subscribe({
       next: (updatedApplication) => {
         // Mise à jour locale pour éviter de recharger tout le tableau
-        const index = this.dataSource.findIndex(app => app.id === id);
+        const index = this.dataSource.findIndex((app) => app.id === id);
         if (index !== -1) {
           this.dataSource[index].status = status;
           this.dataSource = [...this.dataSource]; // Trigger change detection
         }
-        this.snackBar.open('Status updated successfully', 'Close', { duration: 3000 });
+        this.snackBar.open('Status updated successfully', 'Close', {
+          duration: 3000
+        });
       },
       error: (err) => {
-        this.snackBar.open(`Error: ${err.message}`, 'Close', { duration: 5000 });
+        this.snackBar.open(`Error: ${err.message}`, 'Close', {
+          duration: 5000
+        });
       }
     });
   }
 
   get userName(): string {
     return this.user?.name || this.user?.email?.split('@')[0] || 'Guest';
+  }
+
+  viewDetails(application: any) {
+    console.log('Data sent to dialog:', application);
+
+    this.dialog.open(ApplicationDetailsComponent, {
+      width: '850px',
+      data: {
+        candidate: {
+          name: application.candidate,
+          email: application.email
+        },
+        job: {
+          title: application.job
+        },
+        status: application.status,
+        cvUrl: application.cvUrl || null,
+        coverLetterUrl: application.coverLetterUrl || null,
+        portfolioUrl: application.portfolioUrl || null,
+        createdAt: application.appliedDate,
+        updatedAt: application.updatedAt || application.appliedDate
+      },
+      panelClass: 'custom-dialog-container'
+    });
   }
 }

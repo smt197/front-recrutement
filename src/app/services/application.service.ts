@@ -18,10 +18,6 @@ export class ApplicationService {
 
   constructor(private http: HttpClient) {}
 
-  // getApplications() {
-  //   return this.http.get(`${this.apiUrl}/applications`);
-  // }
-
   getApplications(
     page: number = 1,
     limit: number = 10
@@ -40,14 +36,33 @@ export class ApplicationService {
     return this.http.get<string[]>(`${this.apiUrl}/jobs/titles`);
   }
 
-  getApplicationsByJobTitle(title: string): Observable<Application[]> {
-    return this.http.get<Application[]>(
+  getApplicationsByJobTitle(title: string): Observable<any[]> {
+    return this.http.get<any[]>(
       `${this.apiUrl}/applications/job/by-title/${encodeURIComponent(title)}/candidates`
+    );
+  }
+
+  filterApplicationsByJobTitle(title: string): Observable<Application[]> {
+    return this.http.get<Application[]>(
+      `${this.apiUrl}/applications/filter/${encodeURIComponent(title)}`
+    );
+  }
+  // Si vous avez besoin de récupérer les jobId par titre
+  getJobIdByTitle(title: string): Observable<number> {
+    return this.http.get<number>(
+      `${this.apiUrl}/jobs/title/${encodeURIComponent(title)}`
     );
   }
 
   getApplicationById(id: number) {
     return this.http.get(`${this.apiUrl}/applications/${id}`);
+  }
+
+  // filterCandidatesByJob(jobId: number): Observable<any[]> {
+  //   return this.http.get<any[]>(`${this.apiUrl}/applications/filter/${jobId}`);
+  // }
+  getAllJobs(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/jobs`);
   }
 
   updateStatus(

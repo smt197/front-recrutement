@@ -27,6 +27,10 @@
       </mat-form-field>
     </div>
 
+    <div *ngIf="isLoading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <!-- Candidate Column -->
       <ng-container matColumnDef="candidate">

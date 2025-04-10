@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { VexBreadcrumbsComponent } from '@vex/components/vex-breadcrumbs/vex-breadcrumbs.component';
 import { VexSecondaryToolbarComponent } from '@vex/components/vex-secondary-toolbar/vex-secondary-toolbar.component';
 import { Application } from 'src/app/interfaces/application';
@@ -17,6 +17,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { ApplicationDetailsComponent } from '../application-details/application-details.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'vex-dashboard',
@@ -37,7 +38,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatInputModule,
     MatSelectModule,
     MatPaginatorModule,
-    MatDialogModule
+    MatDialogModule,
+    MatProgressSpinnerModule
   ]
 })
 export class DashboardComponent implements OnInit {
@@ -50,10 +52,11 @@ export class DashboardComponent implements OnInit {
     'actions',
     'details'
   ];
-  dataSource: any[] = [];
+  dataSource = new MatTableDataSource<any>();
   isLoading = false;
   selectedJobTitle: string = '';
   jobTitles: string[] = [];
+  jobs: any[] = [];
 
   currentPage = 1;
   itemsPerPage = 10;
@@ -88,6 +91,7 @@ export class DashboardComponent implements OnInit {
   onJobSelected() {
     if (this.selectedJobTitle) {
       this.loadApplicationsByJob(this.selectedJobTitle);
+      this.loadApplicationsByJobTitle(this.selectedJobTitle);
     }
   }
 
@@ -97,7 +101,7 @@ export class DashboardComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.applications = response.data;
-          this.dataSource = this.prepareDataSource(response.data);
+          this.dataSource.data = this.prepareDataSource(response.data);
           this.totalItems = response.meta.total;
         },
         error: (error) => console.error(error)
@@ -125,11 +129,10 @@ export class DashboardComponent implements OnInit {
 
   loadApplicationsByJob(jobTitle: string) {
     this.isLoading = true;
-
     this.applicationService.getApplicationsByJobTitle(jobTitle).subscribe({
       next: (applications: Application[]) => {
         this.applications = applications;
-        this.dataSource = applications.map((app) => ({
+        this.dataSource.data = applications.map((app) => ({
           candidate: app.candidate.name,
           job: app.job.title,
           status: app.status,
@@ -149,6 +152,33 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  loadApplicationsByJobTitle(title: string) {
+    this.isLoading = true;
+
+    this.applicationService.filterApplicationsByJobTitle(title).subscribe({
+      next: (applications: Application[]) => {
+        this.applications = applications;
+        this.dataSource.data = applications.map((app) => ({
+          candidate: app.candidate.name,
+          // job: app.job.title || '',
+          status: app.status,
+          id: app.id,
+          email: app.candidate.email,
+          appliedDate: new Date(app.createdAt).toLocaleDateString()
+        }));
+        console.log('Filtered applications:', this.dataSource.data);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading filtered applications:', error);
+        this.snackBar.open('Erreur lors du filtrage par titre', 'Fermer', {
+          duration: 3000
+        });
+        this.isLoading = false;
+      }
+    });
+  }
+
   updateApplicationStatus(
     id: number,
     status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'PRESELECTED'
@@ -156,10 +186,10 @@ export class DashboardComponent implements OnInit {
     this.applicationService.updateStatus(id, status).subscribe({
       next: (updatedApplication) => {
         // Mise à jour locale pour éviter de recharger tout le tableau
-        const index = this.dataSource.findIndex((app) => app.id === id);
+        const index = this.dataSource.data.findIndex((app) => app.id === id);
         if (index !== -1) {
-          this.dataSource[index].status = status;
-          this.dataSource = [...this.dataSource]; // Trigger change detection
+          this.dataSource.data[index].status = status;
+          this.dataSource.data = [...this.dataSource.data]; // Trigger change detection
         }
         this.snackBar.open('Status updated successfully', 'Close', {
           duration: 3000

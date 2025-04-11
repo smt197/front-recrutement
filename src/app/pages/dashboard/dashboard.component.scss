@@ -41,3 +41,78 @@
     white-space: pre-line; /* Pour conserver les sauts de ligne */
     max-width: 80vw !important;
   }
+
+  .action-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .status-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    
+    &.accepted {
+      background-color: rgba(76, 175, 80, 0.15);
+      
+      .status-icon {
+        color: #4CAF50;
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+    
+    &.rejected {
+      background-color: rgba(244, 67, 54, 0.15);
+      
+      .status-icon {
+        color: #F44336;
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+    
+    &.preselected {
+      background-color: rgba(255, 193, 7, 0.15);
+      
+      .status-icon {
+        color: #FFC107;
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+    
+    &.pending {
+      background-color: rgba(158, 158, 158, 0.15);
+      
+      .status-icon {
+        color: #9E9E9E;
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
+  
+  /* Styles pour le menu */
+  .mat-menu-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .mat-menu-item .mat-icon {
+    margin-right: 8px;
+  }
+  
+  /* Ajuster l'alignement dans la cellule d'actions */
+  .mat-column-actions {
+    min-width: 80px;
+  }

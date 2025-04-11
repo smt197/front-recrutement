@@ -1,0 +1,101 @@
+.dialog-content {
+    min-width: 500px;
+    max-width: 800px;
+    max-height: 80vh;
+  }
+  
+  .loading-container, .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    min-height: 200px;
+  }
+  
+  .error-container {
+    color: #f44336;
+    
+    mat-icon {
+      font-size: 48px;
+      height: 48px;
+      width: 48px;
+      margin-bottom: 16px;
+    }
+  }
+  
+  .job-details {
+    padding: 16px 0;
+  }
+  
+  .job-header {
+    margin-bottom: 24px;
+  }
+  
+  .job-title {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+  
+  .job-location {
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.6);
+    
+    mat-icon {
+      margin-right: 8px;
+      font-size: 20px;
+    }
+  }
+  
+  .job-section {
+    margin: 24px 0;
+    
+    h3 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+  }
+  
+  .job-description {
+    white-space: pre-line;
+    line-height: 1.6;
+  }
+  
+  .job-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  
+  .job-info-item {
+    h3 {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+    
+    p {
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+  
+  mat-chip-set {
+    margin-top: 8px;
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 600px) {
+    .dialog-content {
+      min-width: unset;
+    }
+    
+    .job-info-grid {
+      grid-template-columns: 1fr;
+    }
+  }

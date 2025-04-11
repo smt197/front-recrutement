@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,8 +20,13 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Job } from 'src/app/interfaces/job';
 import { TruncatePipe } from 'src/app/pipes/truncate.pipe';
-import { MatChipsModule } from '@angular/material/chips';
 import { AddJobComponent } from '../add-job/add-job.component';
+import { EditJobComponent } from '../edit-job/edit-job.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { JobDetailsComponent } from '../job-details/job-details.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @Component({
   selector: 'vex-jobs',
@@ -43,10 +48,14 @@ import { AddJobComponent } from '../add-job/add-job.component';
     MatDialogModule,
     MatProgressSpinnerModule,
     TruncatePipe,
-    MatChipsModule
+    MatChipsModule,
+    MatTooltipModule,
+    MatMenuModule,
+    CommonModule
   ],
   templateUrl: './jobs.component.html',
-  styleUrl: './jobs.component.scss'
+  styleUrl: './jobs.component.scss',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class JobsComponent {
   jobs: any[] = [];
@@ -59,7 +68,8 @@ export class JobsComponent {
     'skills',
     'location',
     'deadline',
-    'createdAt'
+    'createdAt',
+    'actions'
   ];
   dataSource = new MatTableDataSource<any>();
   isLoading = false;
@@ -143,6 +153,55 @@ export class JobsComponent {
         // Si le résultat est true, cela signifie que le poste a été créé
         this.loadJobs(); // Recharge la liste des postes
       }
+    });
+  }
+
+  openEditJobDialog(jobId: number): void {
+    const dialogRef = this.dialog.open(EditJobComponent, {
+      width: '600px',
+      data: { jobId }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadJobs(); // Recharger les postes après la mise à jour
+      }
+    });
+  }
+
+  confirmDeleteJob(jobId: number): void {
+    if (
+      confirm(
+        'Êtes-vous sûr de vouloir supprimer ce poste ? Cette action est irréversible.'
+      )
+    ) {
+      this.deleteJob(jobId);
+    }
+  }
+
+  deleteJob(jobId: number): void {
+    this.isLoading = true;
+    this.applicationService.deleteJob(jobId).subscribe({
+      next: () => {
+        this.snackBar.open('Poste supprimé avec succès', 'Fermer', {
+          duration: 3000
+        });
+        this.loadJobs(); // Recharger les postes
+      },
+      error: (error) => {
+        console.error('Error deleting job:', error);
+        this.snackBar.open('Erreur lors de la suppression du poste', 'Fermer', {
+          duration: 3000
+        });
+        this.isLoading = false;
+      }
+    });
+  }
+
+  viewJobDetails(jobId: number): void {
+    this.dialog.open(JobDetailsComponent, {
+      width: '700px',
+      data: { jobId }
     });
   }
 }

@@ -48,11 +48,22 @@ export class ApplicationService {
       `${this.apiUrl}/applications/filter/${encodeURIComponent(title)}`
     );
   }
-  // Si vous avez besoin de récupérer les jobId par titre
   getJobIdByTitle(title: string): Observable<number> {
     return this.http.get<number>(
       `${this.apiUrl}/jobs/title/${encodeURIComponent(title)}`
     );
+  }
+
+  getJobById(id: number): Observable<Job> {
+    return this.http.get<Job>(`${this.apiUrl}/jobs/${id}`);
+  }
+
+  updateJob(id: number, jobData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/jobs/${id}`, jobData);
+  }
+
+  deleteJob(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/jobs/${id}`);
   }
 
   getApplicationById(id: number) {

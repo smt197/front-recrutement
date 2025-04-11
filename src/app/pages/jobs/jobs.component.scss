@@ -30,11 +30,11 @@
       font-style: italic;
     }
   
-    .skills-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
+    // .skills-container {
+    //   display: flex;
+    //   flex-wrap: wrap;
+    //   gap: 4px;
+    // }
   
     table {
       width: 100%;
@@ -52,4 +52,53 @@
         right: 2rem;
         z-index: 100;
       }
+
+      /* Styles pour le menu hamburger */
+.mat-menu-item {
+    display: flex;
+    align-items: center;
   }
+  
+  .mat-menu-item .mat-icon {
+    margin-right: 8px;
+  }
+  
+  /* Style pour l'icône du menu */
+  .mat-icon-button.menu-trigger {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+  
+  .mat-icon-button.menu-trigger:hover {
+    opacity: 1;
+  }
+  
+  /* Ajuster l'alignement dans la cellule d'actions */
+  .mat-column-actions {
+    width: 60px;
+    text-align: center;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+    border-radius: 9999px;
+  }
+  
+  .fab-button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+  }
+
+
+  .mat-chip {
+    font-size: 13px;
+    font-weight: 50;
+  }
+  
+  }
+
+ 

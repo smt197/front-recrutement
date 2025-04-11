@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>Détails du poste</h2>
+
+<mat-dialog-content class="dialog-content">
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des détails...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>Impossible de charger les détails du poste.</p>
+  </div>
+
+  <div *ngIf="!isLoading && !error && job" class="job-details">
+    <div class="job-header">
+      <h2 class="job-title">{{ job.title }}</h2>
+      <div class="job-location">
+        <mat-icon>location_on</mat-icon>
+        <span>{{ job.location }}</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="job-section">
+      <h3>Description</h3>
+      <p class="job-description">{{ job.description }}</p>
+    </div>
+
+    <div class="job-section">
+      <h3>Compétences requises</h3>
+      <mat-chip-set>
+        <mat-chip *ngFor="let skill of job.skills">{{ skill }}</mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <div class="job-info-grid">
+      <div class="job-info-item">
+        <h3>Expérience requise</h3>
+        <p>{{ job.experience }} année(s)</p>
+      </div>
+
+      <div class="job-info-item">
+        <h3>Date limite de candidature</h3>
+        <p>{{ job.deadline | date: "dd/MM/yyyy" }}</p>
+      </div>
+
+      <div class="job-info-item">
+        <h3>Date de publication</h3>
+        <p>{{ job.createdAt | date: "dd/MM/yyyy" }}</p>
+      </div>
+
+      <div class="job-info-item">
+        <h3>Dernière mise à jour</h3>
+        <p>{{ job.updatedAt | date: "dd/MM/yyyy" }}</p>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="primary" (click)="close()">Fermer</button>
+</mat-dialog-actions>

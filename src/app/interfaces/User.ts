@@ -7,4 +7,6 @@ export interface User {
   password?: string; // Facultatif pour éviter de le stocker après connexion
   password_confirmation?: string; // Facultatif, utilisé uniquement pour l'inscription
   role?: string; // Exemple : "admin", "user", etc.
+  experience?: number; // Années d'expérience
+  skills?: string[]; // Liste des compétences
 }

@@ -2,15 +2,23 @@
   <div @fadeInUp class="card overflow-hidden w-full max-w-2xl">
     <ng-container>
       <div @stagger class="p-6 container">
-        <div class="flex flex-col items-start mt-4 mb-4 w-full px-4 sm:px-6" *ngIf="!success">
-          <h2 class="title mb-2 sm:mb-4 flex flex-col sm:flex-row sm:items-center">
-            <span @scaleIn
+        <div
+          class="flex flex-col items-start mt-4 mb-4 w-full px-4 sm:px-6"
+          *ngIf="!success">
+          <h2
+            class="title mb-2 sm:mb-4 flex flex-col sm:flex-row sm:items-center">
+            <span
+              @scaleIn
               class="w-8 h-8 sm:w-10 sm:h-10 rounded-full text-primary-600 mb-2 sm:mb-0 sm:mr-3 flex items-center justify-center bg-primary-600/10">
-              <mat-icon class="icon-xs sm:icon-2xl" svgIcon="mat:person_add"></mat-icon>
+              <mat-icon
+                class="icon-xs sm:icon-2xl"
+                svgIcon="mat:person_add"></mat-icon>
             </span>
             <span class="flex flex-col">
               <span @fadeInRight class="block">Register for an account</span>
-              <span class="body-2 text-secondary m-0 text-sm sm:text-base">Simply fill out the form below</span>
+              <span class="body-2 text-secondary m-0 text-sm sm:text-base"
+                >Simply fill out the form below</span
+              >
             </span>
           </h2>
         </div>
@@ -36,34 +44,50 @@
                 <mat-form-field class="flex-auto">
                   <mat-label>Full Name</mat-label>
                   <input formControlName="name" matInput required />
-                  <mat-error *ngIf="registerForm.get('name')?.hasError('required')">
+                  <mat-error
+                    *ngIf="registerForm.get('name')?.hasError('required')">
                     Name is required
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('name')?.hasError('minlength')">
+                  <mat-error
+                    *ngIf="registerForm.get('name')?.hasError('minlength')">
                     Name must be at least 4 characters
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('name')?.hasError('maxlength')">
+                  <mat-error
+                    *ngIf="registerForm.get('name')?.hasError('maxlength')">
                     Name cannot exceed 50 characters
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('name')?.hasError('pattern')">
-                    Name must contain only letters, spaces, hyphens or apostrophes
+                  <mat-error
+                    *ngIf="registerForm.get('name')?.hasError('pattern')">
+                    Name must contain only letters, spaces, hyphens or
+                    apostrophes
                   </mat-error>
                 </mat-form-field>
 
                 <!-- Email Field -->
                 <mat-form-field class="flex-auto">
                   <mat-label>Email</mat-label>
-                  <input formControlName="email" matInput required type="email" />
-                  <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+                  <input
+                    formControlName="email"
+                    matInput
+                    required
+                    type="email" />
+                  <mat-error
+                    *ngIf="registerForm.get('email')?.hasError('required')">
                     Email is required
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('email')?.hasError('minlength')">
+                  <mat-error
+                    *ngIf="registerForm.get('email')?.hasError('minlength')">
                     Email must be at least 8 characters
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('email')?.hasError('maxlength')">
+                  <mat-error
+                    *ngIf="registerForm.get('email')?.hasError('maxlength')">
                     Email cannot exceed 254 characters
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('email')?.hasError('email') || registerForm.get('email')?.hasError('pattern')">
+                  <mat-error
+                    *ngIf="
+                      registerForm.get('email')?.hasError('email') ||
+                      registerForm.get('email')?.hasError('pattern')
+                    ">
                     Please enter a valid email address
                   </mat-error>
                 </mat-form-field>
@@ -71,30 +95,99 @@
                 <!-- Password Field -->
                 <mat-form-field class="flex-auto">
                   <mat-label>Password</mat-label>
-                  <input [type]="passwordInputType" formControlName="password" matInput required />
-                  <button (click)="showPassword()" *ngIf="passwordInputType === 'password'" mat-icon-button
-                    matIconSuffix type="button">
+                  <input
+                    [type]="passwordInputType"
+                    formControlName="password"
+                    matInput
+                    required />
+                  <button
+                    (click)="showPassword()"
+                    *ngIf="passwordInputType === 'password'"
+                    mat-icon-button
+                    matIconSuffix
+                    type="button">
                     <mat-icon svgIcon="mat:visibility"></mat-icon>
                   </button>
-                  <button (click)="hidePassword()" *ngIf="passwordInputType === 'text'" mat-icon-button
-                    matIconSuffix type="button">
+                  <button
+                    (click)="hidePassword()"
+                    *ngIf="passwordInputType === 'text'"
+                    mat-icon-button
+                    matIconSuffix
+                    type="button">
                     <mat-icon svgIcon="mat:visibility_off"></mat-icon>
                   </button>
-                  <mat-error *ngIf="registerForm.get('password')?.hasError('required')">
+                  <mat-error
+                    *ngIf="registerForm.get('password')?.hasError('required')">
                     Password is required
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">
+                  <mat-error
+                    *ngIf="registerForm.get('password')?.hasError('minlength')">
                     Password must be at least 8 characters
                   </mat-error>
-                  <mat-error *ngIf="registerForm.get('password')?.hasError('pattern')">
-                    Password must contain at least one uppercase, one lowercase, one number and one special character
+                  <mat-error
+                    *ngIf="registerForm.get('password')?.hasError('pattern')">
+                    Password must contain at least one uppercase, one lowercase,
+                    one number and one special character
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Experience Field -->
+                <mat-form-field class="flex-auto">
+                  <mat-label>Experience</mat-label>
+                  <input formControlName="experience" matInput required />
+                  <mat-error
+                    *ngIf="
+                      registerForm.get('experience')?.hasError('required')
+                    ">
+                    L'expérience est requise
+                  </mat-error>
+                  <mat-error
+                    *ngIf="
+                      registerForm
+                        .get('experience')
+                        ?.hasError('nonNegativeInteger')
+                    ">
+                    L'expérience doit être un nombre entier non négatif
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Skills Field -->
+                <mat-form-field
+                  appearance="outline"
+                  class="flex-auto full-width">
+                  <mat-label>Skills</mat-label>
+                  <mat-chip-grid #chipGrid>
+                    <mat-chip-row
+                      *ngFor="let skill of skills"
+                      (removed)="removeSkill(skill)">
+                      {{ skill }}
+                      <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                    <input
+                      placeholder="Ajouter une compétence..."
+                      formControlName="skills"
+                      matInput
+                      required
+                      [matChipInputFor]="chipGrid"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="addSkill($event)" />
+                  </mat-chip-grid>
+                  <mat-error
+                    *ngIf="registerForm.get('skills')?.hasError('required')">
+                    Skills are required
                   </mat-error>
                 </mat-form-field>
               </div>
 
               <!-- Submit Button -->
               <div class="actions flex items-center justify-end gap-2 mt-4">
-                <button [disabled]="registerForm.invalid || isLoading" color="primary" mat-raised-button type="submit">
+                <button
+                  [disabled]="registerForm.invalid || isLoading"
+                  color="primary"
+                  mat-raised-button
+                  type="submit">
                   <span *ngIf="!isLoading">Create Account</span>
                   <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
                 </button>
@@ -106,7 +199,8 @@
         <!-- Success Template -->
         <ng-template #successTemplate>
           <div class="flex flex-col items-center">
-            <div class="p-6 rounded-full bg-primary-600/10 text-primary-600 mx-auto flex items-center justify-center">
+            <div
+              class="p-6 rounded-full bg-primary-600/10 text-primary-600 mx-auto flex items-center justify-center">
               <mat-icon class="icon-5xl" svgIcon="mat:check"></mat-icon>
             </div>
             <p class="text-xl font-bold mt-10">

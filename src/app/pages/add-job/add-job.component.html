@@ -1,0 +1,117 @@
+<h2 mat-dialog-title>Ajouter un nouveau poste</h2>
+
+<form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="dialog-content">
+    <!-- Titre du poste -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Titre du poste</mat-label>
+      <input
+        matInput
+        formControlName="title"
+        placeholder="Ex: Développeur Fullstack" />
+      <mat-error *ngIf="jobForm.get('title')?.hasError('required')">
+        Le titre est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description du poste -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="5"
+        placeholder="Décrivez le poste en détail..."></textarea>
+      <mat-error *ngIf="jobForm.get('description')?.hasError('required')">
+        La description est obligatoire
+      </mat-error>
+      <mat-error *ngIf="jobForm.get('description')?.hasError('minlength')">
+        La description doit contenir au moins 20 caractères
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Expérience requise -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Années d'expérience requises</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="experience"
+        min="0"
+        placeholder="Ex: 3" />
+      <mat-error *ngIf="jobForm.get('experience')?.hasError('required')">
+        L'expérience requise est obligatoire
+      </mat-error>
+      <mat-error *ngIf="jobForm.get('experience')?.hasError('min')">
+        L'expérience ne peut pas être négative
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Compétences requises (chips) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Compétences requises</mat-label>
+      <mat-chip-grid #chipGrid>
+        <mat-chip-row
+          *ngFor="let skill of skills"
+          (removed)="removeSkill(skill)">
+          {{ skill }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+        <input
+          placeholder="Ajouter une compétence..."
+          [matChipInputFor]="chipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addSkill($event)" />
+      </mat-chip-grid>
+      <mat-hint *ngIf="skills.length === 0" class="text-warn"
+        >Ajouter au moins une compétence</mat-hint
+      >
+    </mat-form-field>
+
+    <!-- Lieu du poste -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Lieu</mat-label>
+      <mat-select formControlName="location">
+        <mat-option *ngFor="let location of locations" [value]="location">
+          {{ location }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="jobForm.get('location')?.hasError('required')">
+        Le lieu est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Date limite de candidature -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date limite de candidature</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="deadline" />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="jobForm.get('deadline')?.hasError('required')">
+        La date limite est obligatoire
+      </mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting">
+      Annuler
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="isSubmitting">
+      <mat-icon *ngIf="isSubmitting" class="spin">sync</mat-icon>
+      {{ isSubmitting ? "En cours..." : "Créer le poste" }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -27,12 +27,18 @@ export class NavigationLoaderService {
           {
             type: 'link',
             label: 'Home',
-            route: '/index/home',
+            route: '/index',
             icon: 'mat:home',
             routerLinkActiveOptions: { exact: true }
+          },
+          {
+            type: 'link',
+            label: 'Jobs',
+            route: '/job',
+            icon: 'mat:person'
           }
         ]
-      },
+      }
     ]);
   }
 }

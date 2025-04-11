@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Application, StatusUpdate } from '../interfaces/application';
 import { PaginatedResponse } from '../interfaces/PaginateResponse';
+import { Job, PaginatedResponseJob } from '../interfaces/job';
 
 @Injectable({
   providedIn: 'root'
@@ -58,11 +59,28 @@ export class ApplicationService {
     return this.http.get(`${this.apiUrl}/applications/${id}`);
   }
 
-  // filterCandidatesByJob(jobId: number): Observable<any[]> {
-  //   return this.http.get<any[]>(`${this.apiUrl}/applications/filter/${jobId}`);
-  // }
-  getAllJobs(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/jobs`);
+  getAllJobs(
+    page: number = 1,
+    limit: number = 10,
+    search?: string
+  ): Observable<PaginatedResponseJob<Job>> {
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    let params = new HttpParams()
+      .set('page', pageNum.toString())
+      .set('limit', limitNum.toString());
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<PaginatedResponseJob<Job>>(`${this.apiUrl}/jobs`, {
+      params
+    });
+  }
+
+  createJob(jobData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/jobs/add`, jobData);
   }
 
   updateStatus(

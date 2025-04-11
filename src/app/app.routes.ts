@@ -23,6 +23,11 @@ export const appRoutes: VexRoutes = [
           import('./pages/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent
           )
+      },
+      {
+        path: 'job',
+        loadComponent: () =>
+          import('./pages/jobs/jobs.component').then((m) => m.JobsComponent)
       }
       // {
       //   path: '**',

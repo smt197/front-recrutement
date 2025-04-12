@@ -120,11 +120,21 @@
                 <mat-icon>visibility</mat-icon>
                 <span>Voir</span>
               </button>
-              <button mat-menu-item (click)="openEditJobDialog(job.id)">
+              <button
+                mat-menu-item
+                (click)="openEditJobDialog(job.id)"
+                *ngIf="!(user.role === 'CANDIDATE')">
                 <mat-icon>edit</mat-icon>
                 <span>Modifier</span>
               </button>
-              <button mat-menu-item (click)="confirmDeleteJob(job.id)">
+              <button mat-menu-item *ngIf="!(user.role === 'RECRUTEUR')">
+                <mat-icon>send</mat-icon>
+                <span>Apply</span>
+              </button>
+              <button
+                mat-menu-item
+                (click)="confirmDeleteJob(job.id)"
+                *ngIf="!(user.role === 'CANDIDATE')">
                 <mat-icon>delete</mat-icon>
                 <span>Supprimer</span>
               </button>
@@ -150,6 +160,7 @@
 
     <!-- Floating button -->
     <button
+      *ngIf="!(user.role === 'CANDIDATE')"
       mat-fab
       color="primary"
       class="fab-button"

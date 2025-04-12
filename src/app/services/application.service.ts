@@ -8,7 +8,10 @@ import {
 import { environment } from 'src/environments/environment';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Application, StatusUpdate } from '../interfaces/application';
-import { PaginatedResponse } from '../interfaces/PaginateResponse';
+import {
+  PaginatedApplicationResponseDto,
+  PaginatedResponse
+} from '../interfaces/PaginateResponse';
 import { Job, PaginatedResponseJob } from '../interfaces/job';
 
 @Injectable({
@@ -33,6 +36,19 @@ export class ApplicationService {
     );
   }
 
+  getMyApplications(
+    page: number = 1,
+    limit: number = 10
+  ): Observable<PaginatedApplicationResponseDto> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<PaginatedApplicationResponseDto>(
+      `${this.apiUrl}/applications/my-applications`,
+      { params }
+    );
+  }
   getAllJobTitles(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/jobs/titles`);
   }

@@ -65,9 +65,9 @@
           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           (matChipInputTokenEnd)="addSkill($event)" />
       </mat-chip-grid>
-      <mat-hint *ngIf="skills.length === 0" class="text-warn"
+      <!-- <mat-hint *ngIf="skills.length === 0" class="text-warn"
         >Ajouter au moins une compétence</mat-hint
-      >
+      > -->
     </mat-form-field>
 
     <!-- Lieu du poste -->
@@ -109,7 +109,7 @@
       mat-raised-button
       color="primary"
       type="submit"
-      [disabled]="isSubmitting">
+      [disabled]="isSubmitting || jobForm.invalid">
       <mat-icon *ngIf="isSubmitting" class="spin">sync</mat-icon>
       {{ isSubmitting ? "En cours..." : "Créer le poste" }}
     </button>

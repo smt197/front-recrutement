@@ -19,6 +19,7 @@ import { ApplicationDetailsComponent } from '../application-details/application-
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
+import { PaginatedApplicationResponseDto } from 'src/app/interfaces/PaginateResponse';
 
 @Component({
   selector: 'vex-dashboard',
@@ -48,13 +49,7 @@ import { MatMenuModule } from '@angular/material/menu';
 export class DashboardComponent implements OnInit {
   user: any = null;
   applications: any[] = [];
-  displayedColumns: string[] = [
-    'candidate',
-    'job',
-    'status',
-    'actions',
-    'details'
-  ];
+  displayedColumns: string[] = ['candidate', 'job', 'status', 'details'];
   dataSource = new MatTableDataSource<any>();
   isLoading = false;
   selectedJobTitle: string = '';
@@ -76,8 +71,19 @@ export class DashboardComponent implements OnInit {
     this.authService.currentUser.subscribe((user) => {
       this.user = user;
       if (user?.role === 'RECRUTEUR') {
+        this.displayedColumns = [
+          'candidate',
+          'job',
+          'status',
+          'actions',
+          'details'
+        ];
         this.loadApplications();
         this.loadJobTitles();
+      } else if (user?.role === 'CANDIDATE') {
+        this.displayedColumns = ['job', 'status', 'details'];
+        console.log('Loading my applications');
+        this.loadMyApplications();
       }
     });
   }
@@ -115,6 +121,35 @@ export class DashboardComponent implements OnInit {
         }
       });
   }
+
+  prepareDataSources(applications: Application[]): Application[] {
+    return applications.map((app) => ({
+      ...app,
+      appliedDate: new Date(app.createdAt).toLocaleDateString()
+    }));
+  }
+
+  loadMyApplications() {
+    this.isLoading = true;
+    this.applicationService
+      .getMyApplications(this.currentPage, this.itemsPerPage)
+      .subscribe({
+        next: (response: PaginatedApplicationResponseDto) => {
+          this.applications = response.applications;
+          this.dataSource.data = this.prepareDataSources(response.applications);
+          console.log('My applications:', this.dataSource.data);
+          this.totalItems = response.total;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading my applications:', error);
+          this.snackBar.open('Failed to load applications', 'Close', {
+            duration: 3000
+          });
+          this.isLoading = false;
+        }
+      });
+  }
   prepareDataSource(applications: Application[]): any[] {
     return applications.map((app) => ({
       candidate: app.candidate.name,
@@ -132,7 +167,11 @@ export class DashboardComponent implements OnInit {
   onPageChange(event: PageEvent) {
     this.currentPage = event.pageIndex + 1;
     this.itemsPerPage = event.pageSize;
-    this.loadApplications();
+    if (this.user?.role === 'RECRUTEUR') {
+      this.loadApplications();
+    } else if (this.user?.role === 'CANDIDATE') {
+      this.loadMyApplications();
+    }
   }
 
   loadApplicationsByJob(jobTitle: string) {
@@ -222,24 +261,60 @@ export class DashboardComponent implements OnInit {
   viewDetails(application: any) {
     console.log('Data sent to dialog:', application);
 
-    this.dialog.open(ApplicationDetailsComponent, {
-      width: '850px',
-      data: {
-        candidate: {
-          name: application.candidate,
-          email: application.email
+    if (this.user.role === 'CANDIDATE') {
+      this.dialog.open(ApplicationDetailsComponent, {
+        width: '850px',
+        data: {
+          candidate: {
+            name: application.candidate.name,
+            email: application.candidate.email,
+            experience: application.candidate.experience,
+            skills: application.candidate.skills
+          },
+          job: {
+            title: application.job.title,
+            skills: application.job.skills,
+            experience: application.job.experience
+          },
+          status: application.status,
+          cvUrl: application.cvUrl || null,
+          coverLetterUrl: application.coverLetterUrl || null,
+          portfolioUrl: application.portfolioUrl || null,
+          createdAt: application.appliedDate,
+          updatedAt: application.updatedAt || application.appliedDate
         },
-        job: {
-          title: application.job
+        panelClass: 'custom-dialog-container'
+      });
+      return;
+    } else if (this.user.role === 'RECRUTEUR') {
+      this.dialog.open(ApplicationDetailsComponent, {
+        width: '850px',
+        data: {
+          candidate: {
+            name: application.candidate,
+            email: application.email,
+            experience: application.experience,
+            skills: application.skills
+          },
+          job: {
+            title: application.job,
+            experience: application.experience,
+            skills: application.skills
+          },
+          status: application.status,
+          cvUrl: application.cvUrl || null,
+          coverLetterUrl: application.coverLetterUrl || null,
+          portfolioUrl: application.portfolioUrl || null,
+          createdAt: application.appliedDate,
+          updatedAt: application.updatedAt || application.appliedDate
         },
-        status: application.status,
-        cvUrl: application.cvUrl || null,
-        coverLetterUrl: application.coverLetterUrl || null,
-        portfolioUrl: application.portfolioUrl || null,
-        createdAt: application.appliedDate,
-        updatedAt: application.updatedAt || application.appliedDate
-      },
-      panelClass: 'custom-dialog-container'
-    });
+        panelClass: 'custom-dialog-container'
+      });
+      return;
+    } else {
+      this.snackBar.open('No details available', 'Close', {
+        duration: 3000
+      });
+    }
   }
 }

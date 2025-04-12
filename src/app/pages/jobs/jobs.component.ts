@@ -94,6 +94,28 @@ export class JobsComponent {
   ngOnInit(): void {
     this.authService.currentUser.subscribe((user) => {
       this.user = user;
+      if (user?.role === 'RECRUTEUR') {
+        this.displayedColumns = [
+          'title',
+          'description',
+          'experience',
+          'skills',
+          'location',
+          'deadline',
+          'createdAt',
+          'actions'
+        ];
+      } else {
+        this.displayedColumns = [
+          'title',
+          'description',
+          'experience',
+          'skills',
+          'location',
+          'deadline',
+          'actions'
+        ];
+      }
       this.loadJobs();
     });
   }

@@ -99,6 +99,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadApplications() {
+    this.isLoading = true;
     this.applicationService
       .getApplications(this.currentPage, this.itemsPerPage)
       .subscribe({
@@ -106,8 +107,12 @@ export class DashboardComponent implements OnInit {
           this.applications = response.data;
           this.dataSource.data = this.prepareDataSource(response.data);
           this.totalItems = response.meta.total;
+          this.isLoading = true;
         },
-        error: (error) => console.error(error)
+        error: (error) => console.error(error),
+        complete: () => {
+          this.isLoading = false;
+        }
       });
   }
   prepareDataSource(applications: Application[]): any[] {
@@ -186,6 +191,7 @@ export class DashboardComponent implements OnInit {
     id: number,
     status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'PRESELECTED'
   ) {
+    this.isLoading = true;
     this.applicationService.updateStatus(id, status).subscribe({
       next: (updatedApplication) => {
         // Mise à jour locale pour éviter de recharger tout le tableau
@@ -202,6 +208,9 @@ export class DashboardComponent implements OnInit {
         this.snackBar.open(`Error: ${err.message}`, 'Close', {
           duration: 5000
         });
+      },
+      complete: () => {
+        this.isLoading = false; // Désactiver le spinner
       }
     });
   }

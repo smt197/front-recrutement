@@ -34,11 +34,11 @@ export class AuthService {
       console.error('Role manquant dans la réponse:', loginResponse);
       return;
     }
-  
+
     localStorage.setItem('access_token', loginResponse.access_token);
     localStorage.setItem('currentUser', JSON.stringify(loginResponse.user));
     this.currentUserSubject.next(loginResponse.user);
-    
+
     // Pas de redirection ici !
   }
 
@@ -86,24 +86,24 @@ export class AuthService {
   }
 
   // auth.service.ts
-private redirectBasedOnRole(role: string): void {
-  // Tous les rôles sont redirigés vers /home
-  this.router.navigate(['/home']).then(success => {
-    if (!success) {
-      console.error('Failed to navigate to /home');
-      this.router.navigate(['/']);
-    }
-  });
-}
-  
+  private redirectBasedOnRole(role: string): void {
+    // Tous les rôles sont redirigés vers /home
+    this.router.navigate(['/home']).then((success) => {
+      if (!success) {
+        console.error('Failed to navigate to /home');
+        this.router.navigate(['/']);
+      }
+    });
+  }
+
   private getRoleHome(role: string): string {
-    const baseUrl:any = window.location.origin;
-    const routes:any = {
-      'RECRUTEUR': '/home',
-      'CANDIDATE': '/candidate-dashboard',
-      'ADMIN': '/admin-dashboard'
+    const baseUrl: any = window.location.origin;
+    const routes: any = {
+      RECRUTEUR: '/home',
+      CANDIDATE: '/candidate-dashboard',
+      ADMIN: '/admin-dashboard'
     };
-    
+
     return baseUrl + (routes[role.toUpperCase()] || '/');
   }
   clearUser(): void {
@@ -112,12 +112,15 @@ private redirectBasedOnRole(role: string): void {
     this.currentUserSubject.next(null);
   }
 
-  authenticate(): Observable<{access_token: string, user: any}> {
-    return this.http.get<{access_token: string, user: any}>(`${this.apiUrl}/auth/verify-token`, {
-      headers: {
-        'Authorization': `Bearer ${this.getToken()}`
+  authenticate(): Observable<{ access_token: string; user: any }> {
+    return this.http.get<{ access_token: string; user: any }>(
+      `${this.apiUrl}/auth/verify-token`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getToken()}`
+        }
       }
-    });
+    );
   }
 
   /**
@@ -155,6 +158,13 @@ private redirectBasedOnRole(role: string): void {
       .post<ResponseGlobalServer>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         tap((response: any) => {
+          console.log('Login response:', response); // Debug
+          if (response.requires2FA) {
+            // Rediriger vers la vérification 2FA
+            localStorage.setItem('temp_token', response.temp_token);
+            this.router.navigate(['/2fa']);
+            return;
+          }
           if (!response.access_token) {
             throw new Error('Token manquant dans la réponse du serveur');
           }
@@ -166,6 +176,10 @@ private redirectBasedOnRole(role: string): void {
           return throwError(() => error);
         })
       );
+  }
+
+  toggle2FA(enable: boolean) {
+    return this.http.post(`${this.apiUrl}/auth/2fa/${enable ? 'enable' : 'disable'}`, {});
   }
 
   /**

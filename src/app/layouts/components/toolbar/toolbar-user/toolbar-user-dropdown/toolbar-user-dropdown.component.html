@@ -95,4 +95,16 @@
     <mat-icon svgIcon="mat:notifications_off"></mat-icon>
     <span>Disable Notifications</span>
   </button>
+
+  <button mat-menu-item>
+    <mat-icon svgIcon="mat:security"></mat-icon>
+    <span>2FA</span>
+    <mat-slide-toggle
+      [checked]="user?.isTwoFA"
+      (change)="toggle2FA($event)"
+      style="margin-left: auto;"
+      color="primary">
+    </mat-slide-toggle>
+  </button>
 </mat-menu>
+

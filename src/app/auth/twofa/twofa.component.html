@@ -1,0 +1,30 @@
+<div class="two-factor-container">
+    <div class="qr-code-section" *ngIf="qrCodeImage">
+      <h2 class="section-title">Configuration Google Authenticator</h2>
+      <p class="instruction-text">Scannez ce QR code avec l'application Google Authenticator</p>
+      <div class="qr-code-wrapper">
+        <img [src]="qrCodeImage" alt="QR Code 2FA" class="qr-code-image" />
+      </div>
+    </div>
+    
+    <div class="verification-section">
+      <form [formGroup]="form" (ngSubmit)="verify2FA()" class="verification-form">
+        <h3 class="form-title" *ngIf="qrCodeImage">Entrez le code généré</h3>
+        <h3 class="form-title" *ngIf="!qrCodeImage">Vérification en deux étapes</h3>
+        
+        <mat-form-field appearance="outline" class="token-field">
+          <mat-label>Code 2FA</mat-label>
+          <input matInput formControlName="token" type="text" placeholder="000000" maxlength="6" autocomplete="off" />
+          <mat-hint>Entrez le code à 6 chiffres affiché dans l'app Authenticator</mat-hint>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" type="submit" class="verify-button" [disabled]="isLoading || form.invalid">
+          Vérifier
+        </button>
+      </form>
+    </div>
+    <!-- Overlay spinner pour le chargement global -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  </div>

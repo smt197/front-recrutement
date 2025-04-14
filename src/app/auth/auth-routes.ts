@@ -31,6 +31,11 @@ const authRoute: VexRoutes = [
                 loadComponent: () => import('./email-verify/email-verify.component').then((m) => m.EmailVerifyComponent),
             },
 
+            {
+                path: '2fa',
+                loadComponent: () => import('./twofa/twofa.component').then((m) => m.TwofaComponent),
+            },
+
             
             // {
             //     path: '**',

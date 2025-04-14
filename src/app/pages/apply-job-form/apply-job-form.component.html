@@ -1,0 +1,102 @@
+<!-- apply-job-form.component.html -->
+<h2 mat-dialog-title>Postuler en tant que "{{ data.jobTitle }}"</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="applicationForm">
+    <div class="file-upload-container">
+      <div class="file-input-group">
+        <label>CV (obligatoire)</label>
+        <div class="file-input-wrapper">
+          <button mat-stroked-button type="button" (click)="cvInput.click()">
+            <mat-icon>attach_file</mat-icon>
+            Sélectionner le CV
+          </button>
+          <input
+            #cvInput
+            type="file"
+            accept=".pdf,.doc,.docx"
+            style="display: none"
+            (change)="onCvFileChange($event)" />
+          <span *ngIf="cvFileName" class="file-name">{{ cvFileName }}</span>
+        </div>
+        <mat-error
+          *ngIf="
+            applicationForm.get('cv')!.hasError('required') &&
+            applicationForm.get('cv')!.touched
+          ">
+          Le CV est obligatoire
+        </mat-error>
+      </div>
+
+      <div class="file-input-group">
+        <label>Lettre de motivation</label>
+        <div class="file-input-wrapper">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="coverLetterInput.click()">
+            <mat-icon>attach_file</mat-icon>
+            Sélectionner la lettre
+          </button>
+          <input
+            #coverLetterInput
+            type="file"
+            accept=".pdf,.doc,.docx"
+            style="display: none"
+            (change)="onCoverLetterFileChange($event)" />
+          <span *ngIf="coverLetterFileName" class="file-name">{{
+            coverLetterFileName
+          }}</span>
+        </div>
+      </div>
+
+      <div class="file-input-group">
+        <label>Portfolio (optionnel)</label>
+        <div class="file-input-wrapper">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="portfolioInput.click()">
+            <mat-icon>attach_file</mat-icon>
+            Sélectionner le portfolio
+          </button>
+          <input
+            #portfolioInput
+            type="file"
+            accept=".pdf,.zip,.doc,.docx"
+            style="display: none"
+            (change)="onPortfolioFileChange($event)" />
+          <span *ngIf="portfolioFileName" class="file-name">{{
+            portfolioFileName
+          }}</span>
+        </div>
+      </div>
+
+      <div class="consent-group">
+        <mat-checkbox formControlName="consentGiven" color="primary">
+          Je consens au traitement de mes données personnelles pour cette
+          candidature
+        </mat-checkbox>
+        <mat-error
+          *ngIf="
+            applicationForm.get('consentGiven')!.hasError('required') &&
+            applicationForm.get('consentGiven')!.touched
+          ">
+          Vous devez accepter le traitement de vos données
+        </mat-error>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="isSubmitting">Annuler</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="applicationForm.invalid || isSubmitting"
+    (click)="onSubmit()">
+    <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+    <span *ngIf="!isSubmitting">Soumettre</span>
+  </button>
+</mat-dialog-actions>

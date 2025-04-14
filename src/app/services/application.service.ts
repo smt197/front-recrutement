@@ -22,6 +22,12 @@ export class ApplicationService {
 
   constructor(private http: HttpClient) {}
 
+  submitApplication(formData: FormData): Observable<Application> {
+    return this.http
+      .post<Application>(`${this.apiUrl}/applications/add`, formData)
+      .pipe(catchError(this.handleError));
+  }
+
   getApplications(
     page: number = 1,
     limit: number = 10

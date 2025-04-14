@@ -27,6 +27,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { JobDetailsComponent } from '../job-details/job-details.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ApplyJobFormComponent } from '../apply-job-form/apply-job-form.component';
 
 @Component({
   selector: 'vex-jobs',
@@ -216,6 +217,26 @@ export class JobsComponent {
           duration: 3000
         });
         this.isLoading = false;
+      }
+    });
+  }
+
+  openApplyJobDialog(jobId: number, jobTitle: string): void {
+    const dialogRef = this.dialog.open(ApplyJobFormComponent, {
+      width: '600px',
+      data: { jobId, jobTitle }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Si le résultat est true, la candidature a été soumise avec succès
+        this.snackBar.open(
+          'Votre candidature a été soumise avec succès!',
+          'Fermer',
+          {
+            duration: 3000
+          }
+        );
       }
     });
   }

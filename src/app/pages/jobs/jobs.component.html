@@ -127,7 +127,10 @@
                 <mat-icon>edit</mat-icon>
                 <span>Modifier</span>
               </button>
-              <button mat-menu-item *ngIf="!(user.role === 'RECRUTEUR')">
+              <button
+                mat-menu-item
+                (click)="openApplyJobDialog(job.id, job.title)"
+                *ngIf="!(user.role === 'RECRUTEUR')">
                 <mat-icon>send</mat-icon>
                 <span>Apply</span>
               </button>

@@ -99,7 +99,7 @@ export class DashboardComponent implements OnInit {
 
   onJobSelected() {
     if (this.selectedJobTitle) {
-      this.loadApplicationsByJob(this.selectedJobTitle);
+      // this.loadApplicationsByJob(this.selectedJobTitle);
       this.loadApplicationsByJobTitle(this.selectedJobTitle);
     }
   }

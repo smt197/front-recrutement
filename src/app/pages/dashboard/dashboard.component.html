@@ -34,7 +34,7 @@
       *ngIf="!isLoading && dataSource.data.length === 0"
       class="text-center text-gray-500">
       <mat-icon>info</mat-icon>
-      <span>Aucune candidature trouvé</span>
+      <span>Aucun profil match pour ce poste</span>
     </div>
 
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!isLoading && dataSource.data.length > 0">

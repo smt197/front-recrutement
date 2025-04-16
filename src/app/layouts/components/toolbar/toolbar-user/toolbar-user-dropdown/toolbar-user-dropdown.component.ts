@@ -17,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from 'src/app/services/auth-service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export interface OnlineStatus {
   id: 'online' | 'away' | 'dnd' | 'offline';
@@ -168,19 +168,19 @@ export class ToolbarUserDropdownComponent implements OnInit {
     });
   }
 
-  toggle2FA(event: any) {
+  toggle2FA(event: MatSlideToggleChange) {
     const enable = event.checked;
   
     this.authService.toggle2FA(enable).subscribe({
       next: (res: any) => {
-        this.user.isTwoFA = enable;
+        this.user.isTwoFA = true;
         this.cd.markForCheck();
-        this.showMessage(`2FA ${enable ? 'activée' : 'désactivée'} avec succès`);
+        this.showMessage(`2FA ${enable ? 'true' : 'false'} avec succès`);
       },
       error: (err) => {
         this.showMessage(err.error.message || 'Une erreur est survenue');
         // Revert switch si erreur
-        this.user.isTwoFA = !enable;
+        this.user.isTwoFA = false;
         this.cd.markForCheck();
       }
     });

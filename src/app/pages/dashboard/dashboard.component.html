@@ -30,7 +30,14 @@
       <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <div
+      *ngIf="!isLoading && dataSource.data.length === 0"
+      class="text-center text-gray-500">
+      <mat-icon>info</mat-icon>
+      <span>Aucune candidature trouvé</span>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!isLoading && dataSource.data.length > 0">
       <!-- Candidate Column -->
       <ng-container matColumnDef="candidate">
         <th mat-header-cell *matHeaderCellDef>Candidat</th>
@@ -125,6 +132,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
     <mat-paginator
+      *ngIf="dataSource.data.length > 0"
       [length]="totalItems"
       [pageSize]="itemsPerPage"
       [pageSizeOptions]="[5, 10, 20]"
@@ -139,7 +147,14 @@
       <mat-spinner diameter="40"></mat-spinner>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <div
+      *ngIf="!isLoading && dataSource.data.length === 0"
+      class="text-center text-gray-500">
+      <mat-icon>info</mat-icon>
+      <span>Aucune candidature trouvé</span>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!isLoading && dataSource.data.length > 0">
       <!-- Candidate Column
       <ng-container matColumnDef="candidate">
         <th mat-header-cell *matHeaderCellDef>Candidat</th>
@@ -174,6 +189,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
     <mat-paginator
+      *ngIf="dataSource.data.length > 0"
       [length]="totalItems"
       [pageSize]="itemsPerPage"
       [pageSizeOptions]="[5, 10, 20]"

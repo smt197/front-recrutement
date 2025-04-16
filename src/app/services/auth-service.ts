@@ -179,9 +179,9 @@ export class AuthService {
   }
 
   toggle2FA(enable: boolean) {
-    return this.http.post(`${this.apiUrl}/auth/2fa/${enable ? 'enable' : 'disable'}`, {});
+    const endpoint = enable ? 'enable' : 'disable';
+    return this.http.post(`${this.apiUrl}/auth/2fa/${endpoint}`, {});
   }
-
   /**
    * Déconnexion de l'utilisateur
    */

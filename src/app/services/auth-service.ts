@@ -85,12 +85,11 @@ export class AuthService {
     }, 200);
   }
 
-  // auth.service.ts
   private redirectBasedOnRole(role: string): void {
-    // Tous les rôles sont redirigés vers /home
-    this.router.navigate(['/home']).then((success) => {
+    const targetRoute = role === 'CANDIDATE' ? '/candidate-dashboard' : '/home';
+    this.router.navigate([targetRoute]).then((success) => {
       if (!success) {
-        console.error('Failed to navigate to /home');
+        console.error(`Failed to navigate to ${targetRoute}`);
         this.router.navigate(['/']);
       }
     });

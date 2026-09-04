@@ -123,21 +123,21 @@
               <button
                 mat-menu-item
                 (click)="openEditJobDialog(job.id)"
-                *ngIf="!(user.role === 'CANDIDATE')">
+                *ngIf="user?.role === 'RECRUTEUR' || user?.role === 'ADMIN'">
                 <mat-icon>edit</mat-icon>
                 <span>Modifier</span>
               </button>
               <button
                 mat-menu-item
                 (click)="openApplyJobDialog(job.id, job.title)"
-                *ngIf="!(user.role === 'RECRUTEUR')">
+                *ngIf="user?.role === 'CANDIDATE'">
                 <mat-icon>send</mat-icon>
-                <span>Apply</span>
+                <span>Postuler</span>
               </button>
               <button
                 mat-menu-item
                 (click)="confirmDeleteJob(job.id)"
-                *ngIf="!(user.role === 'CANDIDATE')">
+                *ngIf="user?.role === 'RECRUTEUR' || user?.role === 'ADMIN'">
                 <mat-icon>delete</mat-icon>
                 <span>Supprimer</span>
               </button>
@@ -165,7 +165,7 @@
 
     <!-- Floating button -->
     <button
-      *ngIf="!(user.role === 'CANDIDATE')"
+      *ngIf="user?.role === 'RECRUTEUR' || user?.role === 'ADMIN'"
       mat-fab
       color="primary"
       class="fab-button"

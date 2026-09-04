@@ -95,7 +95,7 @@ export class JobsComponent {
   ngOnInit(): void {
     this.authService.currentUser.subscribe((user) => {
       this.user = user;
-      if (user?.role === 'RECRUTEUR') {
+      if (user?.role === 'RECRUTEUR' || user?.role === 'ADMIN') {
         this.displayedColumns = [
           'title',
           'description',

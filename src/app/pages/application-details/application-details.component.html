@@ -1,4 +1,4 @@
-<div *ngIf="user?.role === 'RECRUTEUR'" class="details-container">
+<div *ngIf="user?.role === 'RECRUTEUR' || user?.role === 'ADMIN'" class="details-container">
   <h2 mat-dialog-title class="header">
     <mat-icon class="icon">description</mat-icon>
     Détails de la candidature

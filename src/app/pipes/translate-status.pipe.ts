@@ -6,11 +6,13 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true
 })
 export class TranslateStatusPipe implements PipeTransform {
-  transform(value: 'PENDING' | 'ACCEPTED' | 'REJECTED'): string {
-    const translations = {
+  transform(value: string): string {
+    const translations: Record<string, string> = {
       PENDING: 'En attente',
+      PRESELECTED: 'Présélectionné',
       ACCEPTED: 'Accepté',
-      REJECTED: 'Rejeté'
+      REJECTED: 'Rejeté',
+      INTERVIEW_SCHEDULED: 'Entretien planifié'
     };
     return translations[value] || value;
   }

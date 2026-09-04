@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser.subscribe((user) => {
       this.user = user;
-      if (user?.role === 'RECRUTEUR') {
+      if (user?.role === 'RECRUTEUR' || user?.role === 'ADMIN') {
         this.displayedColumns = [
           'candidate',
           'job',
@@ -82,7 +82,6 @@ export class DashboardComponent implements OnInit {
         this.loadJobTitles();
       } else if (user?.role === 'CANDIDATE') {
         this.displayedColumns = ['job', 'status', 'details'];
-        console.log('Loading my applications');
         this.loadMyApplications();
       }
     });
@@ -99,7 +98,6 @@ export class DashboardComponent implements OnInit {
 
   onJobSelected() {
     if (this.selectedJobTitle) {
-      // this.loadApplicationsByJob(this.selectedJobTitle);
       this.loadApplicationsByJobTitle(this.selectedJobTitle);
     }
   }
@@ -113,9 +111,12 @@ export class DashboardComponent implements OnInit {
           this.applications = response.data;
           this.dataSource.data = this.prepareDataSource(response.data);
           this.totalItems = response.meta.total;
-          this.isLoading = true;
+          this.isLoading = false;
         },
-        error: (error) => console.error(error),
+        error: (error) => {
+          console.error(error);
+          this.isLoading = false;
+        },
         complete: () => {
           this.isLoading = false;
         }
@@ -137,7 +138,6 @@ export class DashboardComponent implements OnInit {
         next: (response: PaginatedApplicationResponseDto) => {
           this.applications = response.applications;
           this.dataSource.data = this.prepareDataSources(response.applications);
-          console.log('My applications:', this.dataSource.data);
           this.totalItems = response.total;
           this.isLoading = false;
         },
@@ -150,13 +150,17 @@ export class DashboardComponent implements OnInit {
         }
       });
   }
-  prepareDataSource(applications: Application[]): any[] {
+
+  prepareDataSource(applications: any[]): any[] {
     return applications.map((app) => ({
-      candidate: app.candidate.name,
-      job: app.job.title,
+      ...app,
+      candidateName: app.candidate?.name || 'Nom indisponible',
+      jobTitle: app.job?.title || 'Poste inconnu',
+      email: app.candidate?.email,
+      candidate: app.candidate?.name || 'Nom indisponible',
+      job: app.job?.title || 'Poste inconnu',
       status: app.status,
       id: app.id,
-      email: app.candidate.email,
       cvUrl: app.cvUrl,
       coverLetterUrl: app.coverLetterUrl,
       portfolioUrl: app.portfolioUrl,
@@ -167,7 +171,7 @@ export class DashboardComponent implements OnInit {
   onPageChange(event: PageEvent) {
     this.currentPage = event.pageIndex + 1;
     this.itemsPerPage = event.pageSize;
-    if (this.user?.role === 'RECRUTEUR') {
+    if (this.user?.role === 'RECRUTEUR' || this.user?.role === 'ADMIN') {
       this.loadApplications();
     } else if (this.user?.role === 'CANDIDATE') {
       this.loadMyApplications();
@@ -259,62 +263,36 @@ export class DashboardComponent implements OnInit {
   }
 
   viewDetails(application: any) {
-    console.log('Data sent to dialog:', application);
+    const candidateData = application.candidate && typeof application.candidate === 'object'
+      ? application.candidate
+      : {
+          name: application.candidateName || application.candidate,
+          email: application.email,
+          experience: application.experience,
+          skills: application.skills
+        };
 
-    if (this.user.role === 'CANDIDATE') {
-      this.dialog.open(ApplicationDetailsComponent, {
-        width: '850px',
-        data: {
-          candidate: {
-            name: application.candidate.name,
-            email: application.candidate.email,
-            experience: application.candidate.experience,
-            skills: application.candidate.skills
-          },
-          job: {
-            title: application.job.title,
-            skills: application.job.skills,
-            experience: application.job.experience
-          },
-          status: application.status,
-          cvUrl: application.cvUrl || null,
-          coverLetterUrl: application.coverLetterUrl || null,
-          portfolioUrl: application.portfolioUrl || null,
-          createdAt: application.appliedDate,
-          updatedAt: application.updatedAt || application.appliedDate
-        },
-        panelClass: 'custom-dialog-container'
-      });
-      return;
-    } else if (this.user.role === 'RECRUTEUR') {
-      this.dialog.open(ApplicationDetailsComponent, {
-        width: '850px',
-        data: {
-          candidate: {
-            name: application.candidate,
-            email: application.email,
-            experience: application.experience,
-            skills: application.skills
-          },
-          job: {
-            title: application.job,
-            experience: application.experience,
-            skills: application.skills
-          },
-          status: application.status,
-          cvUrl: application.cvUrl || null,
-          coverLetterUrl: application.coverLetterUrl || null,
-          portfolioUrl: application.portfolioUrl || null,
-          createdAt: application.appliedDate,
-          updatedAt: application.updatedAt || application.appliedDate
-        },
-        panelClass: 'custom-dialog-container'
-      });
-      return;
-    } else {
-      this.snackBar.open('No details available', 'Close', {
-        duration: 3000
-      });
-    }
+    const jobData = application.job && typeof application.job === 'object'
+      ? application.job
+      : {
+          title: application.jobTitle || application.job,
+          experience: application.experience,
+          skills: application.skills
+        };
+
+    this.dialog.open(ApplicationDetailsComponent, {
+      width: '850px',
+      data: {
+        candidate: candidateData,
+        job: jobData,
+        status: application.status,
+        cvUrl: application.cvUrl || null,
+        coverLetterUrl: application.coverLetterUrl || null,
+        portfolioUrl: application.portfolioUrl || null,
+        createdAt: application.appliedDate || new Date(application.createdAt).toLocaleDateString(),
+        updatedAt: application.updatedAt ? new Date(application.updatedAt).toLocaleDateString() : application.appliedDate
+      },
+      panelClass: 'custom-dialog-container'
+    });
   }
 }

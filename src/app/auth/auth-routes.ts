@@ -2,7 +2,7 @@ import { noAuthGuard } from "../guards/no-auth.guard";
 import { AuthComponent } from "./auth.component";
 import { VexRoutes } from '@vex/interfaces/vex-route.interface';
 
-const authRoute: VexRoutes = [
+export const authRoute: VexRoutes = [
     {
         path: '',
         component: AuthComponent,

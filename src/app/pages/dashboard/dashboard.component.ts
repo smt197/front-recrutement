@@ -74,6 +74,7 @@ export class DashboardComponent implements OnInit {
         this.displayedColumns = [
           'candidate',
           'job',
+          'matchScore',
           'status',
           'actions',
           'details'
@@ -258,6 +259,28 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  runAiAnalysis(id: number) {
+    this.isLoading = true;
+    this.snackBar.open('Analyse IA en cours avec Ollama...', 'Fermer', { duration: 3000 });
+    this.applicationService.analyzeApplicationWithAi(id).subscribe({
+      next: (updatedApp: any) => {
+        const index = this.dataSource.data.findIndex((app) => app.id === id);
+        if (index !== -1) {
+          this.dataSource.data[index].matchScore = updatedApp.matchScore;
+          this.dataSource.data[index].aiAnalysis = updatedApp.aiAnalysis;
+          this.dataSource.data = [...this.dataSource.data];
+        }
+        this.snackBar.open('Analyse IA terminée avec succès !', 'OK', { duration: 3000 });
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur Analyse IA:', err);
+        this.snackBar.open('Erreur lors de l\'analyse IA', 'Fermer', { duration: 3000 });
+        this.isLoading = false;
+      }
+    });
+  }
+
   get userName(): string {
     return this.user?.name || this.user?.email?.split('@')[0] || 'Guest';
   }
@@ -286,6 +309,8 @@ export class DashboardComponent implements OnInit {
         candidate: candidateData,
         job: jobData,
         status: application.status,
+        matchScore: application.matchScore,
+        aiAnalysis: application.aiAnalysis,
         cvUrl: application.cvUrl || null,
         coverLetterUrl: application.coverLetterUrl || null,
         portfolioUrl: application.portfolioUrl || null,

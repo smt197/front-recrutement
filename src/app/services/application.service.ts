@@ -128,6 +128,12 @@ export class ApplicationService {
       .pipe(catchError(this.handleError));
   }
 
+  analyzeApplicationWithAi(applicationId: number): Observable<Application> {
+    return this.http
+      .post<Application>(`${this.apiUrl}/applications/${applicationId}/analyze`, {})
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred';
     if (error.error instanceof ErrorEvent) {

@@ -133,7 +133,10 @@ export class ApplyJobFormComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error submitting application:', error);
-        this.showMessage('La date limite de candidature est dépassée');
+        const errorMsg =
+          error?.error?.message ||
+          'Une erreur est survenue lors de la soumission de la candidature.';
+        this.showMessage(Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg);
         this.isSubmitting = false;
       }
     });
